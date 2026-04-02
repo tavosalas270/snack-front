@@ -1,11 +1,13 @@
 import { Image } from 'expo-image';
 import { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import SignUpButton from './components/SignUpButton';
+import HelpSection from './components/HelpSection';
 
 export default function SignUpScreen() {
   const [selectedWallet, setSelectedWallet] = useState<'create' | 'own' | null>('create');
+  const [helpVisible, setHelpVisible] = useState(false);
 
   return (
     <View className="flex-1 justify-between h-full py-8">
@@ -40,7 +42,7 @@ export default function SignUpScreen() {
         <View className="relative flex-row items-center justify-center gap-3 w-[96px] mx-auto">
           {/* Connecting Line */}
           <View className="absolute h-[2px] bg-snack-pink left-6 right-[6px] top-1/2 -translate-y-1/2 z-0" />
-          
+
           <View className="w-6 h-6 rounded-full border-2 border-snack-pink items-center justify-center z-10">
             <View className="w-3 h-3 rounded-full bg-white" />
           </View>
@@ -84,15 +86,20 @@ export default function SignUpScreen() {
 
         {/* Footer */}
         <View className="w-full items-center">
-          <View className="w-8 h-8 rounded-full border-white border-2 items-center justify-center mb-3">
+          {/*Help Section Button*/}
+          <Pressable 
+            onPress={() => setHelpVisible(true)}
+            className="w-8 h-8 rounded-full border-white border-2 items-center justify-center mb-3"
+          >
             <Text className="text-white font-bold">?</Text>
-          </View>
+          </Pressable>
           <Text className="text-white tracking-widest text-xs font-jost">
             © 2023 SNAK. All rights reserved.
           </Text>
         </View>
 
       </SafeAreaView>
+      <HelpSection visible={helpVisible} onClose={() => setHelpVisible(false)} />
     </View>
   );
 }
