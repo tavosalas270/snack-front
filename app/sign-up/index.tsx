@@ -2,6 +2,7 @@ import { Image } from 'expo-image';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { AntDesign } from '@expo/vector-icons';
 import HelpSection from './components/HelpSection';
 import SignUpButton from './components/SignUpButton';
 import Create from './sections/Create';
@@ -10,6 +11,15 @@ import LinkEmail from './sections/LinkEmail';
 export default function SignUpScreen() {
   const [sectionSelected, setSectionSelected] = useState<'create' | 'link' | 'code' | null>("create");
   const [helpVisible, setHelpVisible] = useState(false);
+
+  const handleBack = () => {
+    if (sectionSelected === 'code') {
+      setSectionSelected('link');
+    } else if (sectionSelected === 'link') {
+      setSectionSelected('create');
+    }
+  };
+
   // return <Create />;
   return (
     <View className="flex-1 justify-between h-full py-8">
@@ -22,7 +32,16 @@ export default function SignUpScreen() {
 
       <SafeAreaView className="flex flex-col h-full justify-between px-6">
         {/* Top Section: Logo & Tabs */}
-        <View className="items-center">
+        <View className="items-center relative w-full">
+          {sectionSelected !== "create" && (
+            <Pressable
+              onPress={handleBack}
+              className="absolute left-0 top-6 w-12 h-12 rounded-full bg-[#fce6f5] items-center justify-center z-10"
+            >
+              <AntDesign name="arrow-left" size={24} color="#BF0FB4" />
+            </Pressable>
+          )}
+
           <Image
             source={require('@/assets/icons/snack_white.svg')}
             style={{ width: 120, height: 100 }}
@@ -42,13 +61,40 @@ export default function SignUpScreen() {
         {/* Progress Dots */}
         <View className="relative flex-row items-center justify-center gap-3 w-[96px] mx-auto">
           {/* Connecting Line */}
-          <View className="absolute h-[2px] bg-snack-pink left-6 right-[6px] top-1/2 -translate-y-1/2 z-0" />
+          <View className="absolute h-[2px] bg-snack-pink left-2 right-2 top-1/2 -translate-y-1/2 z-0" />
 
-          <View className="w-6 h-6 rounded-full border-2 border-snack-pink items-center justify-center z-10">
-            <View className="w-3 h-3 rounded-full bg-white" />
-          </View>
-          <View className="w-3 h-3 rounded-full bg-white z-10" />
-          <View className="w-3 h-3 rounded-full bg-white z-10" />
+          {/* Dot 1 */}
+          {sectionSelected === "create" ? (
+            <View className="w-6 h-6 rounded-full border-2 border-snack-pink items-center justify-center z-10 bg-[#1E0942]">
+              <View className="w-3 h-3 rounded-full bg-white" />
+            </View>
+          ) : (
+            <View className="w-3 h-3 rounded-full bg-snack-pink z-10" />
+          )}
+
+          {/* Dot 2 */}
+          {sectionSelected === "create" ? (
+            <View className="w-3 h-3 rounded-full bg-white z-10" />
+          ) : sectionSelected === "link" ? (
+            <View className="w-6 h-6 rounded-full border-2 border-snack-pink items-center justify-center z-10 bg-[#1E0942]">
+              <View className="w-3 h-3 rounded-full bg-white" />
+            </View>
+          ) : (
+            <View className="w-3 h-3 rounded-full bg-snack-pink z-10" />
+          )}
+
+          {/* Dot 3 */}
+          {sectionSelected === "create" || sectionSelected === "link" ? (
+            <View className="w-3 h-3 rounded-full bg-white z-10" />
+          ) : sectionSelected === "code" ? (
+            <View className="w-6 h-6 rounded-full border-2 border-snack-pink items-center justify-center z-10 bg-[#1E0942]">
+              <View className="w-3 h-3 rounded-full bg-white" />
+            </View>
+          ) : (
+            <View className="w-3 h-3 rounded-full bg-snack-pink z-10" />
+          )}
+
+          {/* Dot 4 */}
           <View className="w-3 h-3 rounded-full bg-white z-10" />
         </View>
 
