@@ -37,13 +37,16 @@ export default function SignUpScreen() {
         </View>
 
         {/* Progress Dots */}
-        <View className="flex-row items-center justify-center gap-3">
-          <View className="w-6 h-6 rounded-full border-2 border-white items-center justify-center">
-            <View className="w-3 h-3 rounded-full bg-snack-pink" />
+        <View className="relative flex-row items-center justify-center gap-3 w-[96px] mx-auto">
+          {/* Connecting Line */}
+          <View className="absolute h-[2px] bg-snack-pink left-6 right-[6px] top-1/2 -translate-y-1/2 z-0" />
+          
+          <View className="w-6 h-6 rounded-full border-2 border-snack-pink items-center justify-center z-10">
+            <View className="w-3 h-3 rounded-full bg-white" />
           </View>
-          <View className="w-3 h-3 rounded-full bg-white/40" />
-          <View className="w-3 h-3 rounded-full bg-white/40" />
-          <View className="w-3 h-3 rounded-full bg-white/40" />
+          <View className="w-3 h-3 rounded-full bg-white z-10" />
+          <View className="w-3 h-3 rounded-full bg-white z-10" />
+          <View className="w-3 h-3 rounded-full bg-white z-10" />
         </View>
 
         {/* Header Title */}
