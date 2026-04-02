@@ -1,11 +1,13 @@
-import { Fragment, useState } from 'react';
+import { Fragment, useState, ReactNode } from 'react';
 import { Text, View } from 'react-native';
 import SignUpButton from '../components/SignUpButton';
 
-export default function Create() {
+interface CreateProps {
+  children?: ReactNode;
+}
+
+export default function Create({ children }: CreateProps) {
   const [selectedWallet, setSelectedWallet] = useState<'create' | 'own' | null>('create');
-  const [helpVisible, setHelpVisible] = useState(false);
-  const [sectionSelected, setSectionSelected] = useState<'create' | 'link' | 'code' | null>("create");
 
   return (
     <Fragment>
@@ -15,7 +17,7 @@ export default function Create() {
       </Text>
 
       {/* Actions Container */}
-      <View className="flex flex-col w-full gap-4">
+      <View className="flex flex-col w-full gap-4 mb-6">
 
         <View className="w-full">
           <SignUpButton
@@ -31,6 +33,8 @@ export default function Create() {
             onPress={() => setSelectedWallet('own')}
           />
         </View>
+
+        {children}
       </View>
 
     </Fragment>

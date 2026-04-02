@@ -51,15 +51,17 @@ export default function SignUpScreen() {
           <View className="w-3 h-3 rounded-full bg-white z-10" />
         </View>
 
-        {sectionSelected === "create" && <Create />}
-
-        <View className="w-full">
-          <SignUpButton
-            variant="primary"
-            title="CONTINUE"
-            onPress={() => setSectionSelected("link")}
-          />
-        </View>
+        {sectionSelected === "create" && (
+          <Create>
+            <View className="w-full">
+              <SignUpButton
+                variant="primary"
+                title="CONTINUE"
+                onPress={() => setSectionSelected("link")}
+              />
+            </View>
+          </Create>
+        )}
 
         {/* Footer */}
         <View className="w-full items-center">
