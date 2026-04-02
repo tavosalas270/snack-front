@@ -1,7 +1,7 @@
-import { View, Text, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
 import { useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import SignUpButton from './components/SignUpButton';
 
 export default function SignUpScreen() {
@@ -10,22 +10,22 @@ export default function SignUpScreen() {
   return (
     <View className="flex-1">
       {/* Background */}
-      <Image 
+      <Image
         source={require('@/assets/images/FondoUno.png')}
         style={StyleSheet.absoluteFillObject}
         contentFit="cover"
       />
-      
-      <SafeAreaView className="flex-1 pt-12 px-6">
-        
+
+      <SafeAreaView className="flex-1 px-6">
+
         {/* Top Section: Logo & Tabs */}
         <View className="items-center mb-8">
-          <Image 
+          <Image
             source={require('@/assets/icons/snack_white.svg')}
             style={{ width: 140, height: 60 }}
             contentFit="contain"
           />
-          
+
           <View className="flex-row items-center mt-6 bg-black/20 rounded-full p-1 border border-white/10">
             <View className="px-6 py-2">
               <Text className="text-white font-jost-bold">LOGIN</Text>
@@ -51,29 +51,32 @@ export default function SignUpScreen() {
           Which type of wallet would you like to use?
         </Text>
 
-        {/* Wallet Selection */}
-        <View className="flex-1 w-full justify-center">
-          <SignUpButton 
-            variant="option" 
-            title="CREATE A SNAK WALLET" 
-            selected={selectedWallet === 'create'}
-            onPress={() => setSelectedWallet('create')}
-          />
-          <SignUpButton 
-            variant="option" 
-            title="USE MY OWN WALLET" 
-            selected={selectedWallet === 'own'}
-            onPress={() => setSelectedWallet('own')}
-          />
-        </View>
+        {/* Actions Container */}
+        <View className="flex-1 w-full justify-center gap-4 mb-8">
+          {/* Wallet Selection */}
+          <View className="w-full">
+            <SignUpButton
+              variant="option"
+              title="CREATE A SNAK WALLET"
+              selected={selectedWallet === 'create'}
+              onPress={() => setSelectedWallet('create')}
+            />
+            <SignUpButton
+              variant="option"
+              title="USE MY OWN WALLET"
+              selected={selectedWallet === 'own'}
+              onPress={() => setSelectedWallet('own')}
+            />
+          </View>
 
-        {/* Main CTA */}
-        <View className="w-full mt-4 mb-8">
-          <SignUpButton 
-            variant="primary" 
-            title="CONTINUE" 
-            onPress={() => {}} 
-          />
+          {/* Main CTA */}
+          <View className="w-full">
+            <SignUpButton
+              variant="primary"
+              title="CONTINUE"
+              onPress={() => { }}
+            />
+          </View>
         </View>
 
         {/* Footer */}
