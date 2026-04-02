@@ -16,13 +16,13 @@ export default function SignUpScreen() {
         contentFit="cover"
       />
 
-      <SafeAreaView className="flex-1 px-6">
+      <SafeAreaView className="flex flex-col h-full justify-between px-6">
 
         {/* Top Section: Logo & Tabs */}
-        <View className="items-center mb-8">
+        <View className="items-center">
           <Image
             source={require('@/assets/icons/snack_white.svg')}
-            style={{ width: 130, height: 110 }}
+            style={{ width: 120, height: 100 }}
             contentFit="contain"
           />
 
@@ -37,7 +37,7 @@ export default function SignUpScreen() {
         </View>
 
         {/* Progress Dots */}
-        <View className="flex-row items-center justify-center gap-3 mt-2">
+        <View className="flex-row items-center justify-center gap-3">
           <View className="w-6 h-6 rounded-full border-2 border-white items-center justify-center">
             <View className="w-3 h-3 rounded-full bg-snack-pink" />
           </View>
@@ -47,12 +47,12 @@ export default function SignUpScreen() {
         </View>
 
         {/* Header Title */}
-        <Text className="text-white text-2xl mt-10 mb-12 font-jost-bold text-center uppercase tracking-widest leading-tight">
+        <Text className="text-white text-2xl font-jost-bold text-center uppercase tracking-widest leading-tight">
           Which type of wallet would you like to use?
         </Text>
 
         {/* Actions Container */}
-        <View className="flex-1 w-full gap-4">
+        <View className="flex flex-col w-full gap-4 mb-6">
 
           <View className="w-full">
             <SignUpButton
@@ -80,11 +80,11 @@ export default function SignUpScreen() {
         </View>
 
         {/* Footer */}
-        <View className="w-full items-center mb-6">
+        <View className="w-full items-center">
           <View className="w-8 h-8 rounded-full border-white border-2 items-center justify-center mb-3">
             <Text className="text-white font-bold">?</Text>
           </View>
-          <Text className="text-white/50 text-xs">
+          <Text className="text-white tracking-widest text-xs font-jost">
             © 2023 SNAK. All rights reserved.
           </Text>
         </View>
