@@ -13,6 +13,8 @@ module.exports = {
       },
       fontFamily: {
         'cherry-bomb': ['CherryBombOne_400Regular'],
+        'jost': ['Jost_400Regular'],
+        'jost-bold': ['Jost_700Bold'],
       }
     },
   },

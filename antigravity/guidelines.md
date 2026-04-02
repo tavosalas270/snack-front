@@ -15,7 +15,7 @@
 
 # Tipografía
 
-- Uso obligatorio de CHERRY BOMB
+- Uso obligatorio de CHERRY BOMB o JOST segun sea indicado.
 
 # Iconos
 

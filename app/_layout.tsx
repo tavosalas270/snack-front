@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { useFonts, CherryBombOne_400Regular } from '@expo-google-fonts/cherry-bomb-one';
+import { Jost_400Regular, Jost_700Bold } from '@expo-google-fonts/jost';
 
 import '../global.css';
 import 'react-native-reanimated';
@@ -20,6 +21,8 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [loaded, error] = useFonts({
     CherryBombOne_400Regular,
+    Jost_400Regular,
+    Jost_700Bold,
   });
 
   useEffect(() => {
