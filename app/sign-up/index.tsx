@@ -1,14 +1,15 @@
 import { Image } from 'expo-image';
 import { useState } from 'react';
-import { StyleSheet, Text, View, Pressable } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import SignUpButton from './components/SignUpButton';
 import HelpSection from './components/HelpSection';
+import SignUpButton from './components/SignUpButton';
+import Create from './sections/Create';
 
 export default function SignUpScreen() {
-  const [selectedWallet, setSelectedWallet] = useState<'create' | 'own' | null>('create');
+  const [sectionSelected, setSectionSelected] = useState<'create' | 'link' | 'code' | null>("create");
   const [helpVisible, setHelpVisible] = useState(false);
-
+  // return <Create />;
   return (
     <View className="flex-1 justify-between h-full py-8">
       {/* Background */}
@@ -19,7 +20,6 @@ export default function SignUpScreen() {
       />
 
       <SafeAreaView className="flex flex-col h-full justify-between px-6">
-
         {/* Top Section: Logo & Tabs */}
         <View className="items-center">
           <Image
@@ -51,43 +51,20 @@ export default function SignUpScreen() {
           <View className="w-3 h-3 rounded-full bg-white z-10" />
         </View>
 
-        {/* Header Title */}
-        <Text className="text-white text-2xl font-jost-bold text-center uppercase tracking-widest leading-tight">
-          Which type of wallet would you like to use?
-        </Text>
+        {sectionSelected === "create" && <Create />}
 
-        {/* Actions Container */}
-        <View className="flex flex-col w-full gap-4 mb-6">
-
-          <View className="w-full">
-            <SignUpButton
-              variant="option"
-              title="CREATE A SNAK WALLET"
-              selected={selectedWallet === 'create'}
-              onPress={() => setSelectedWallet('create')}
-            />
-            <SignUpButton
-              variant="option"
-              title="USE MY OWN WALLET"
-              selected={selectedWallet === 'own'}
-              onPress={() => setSelectedWallet('own')}
-            />
-          </View>
-
-
-          <View className="w-full">
-            <SignUpButton
-              variant="primary"
-              title="CONTINUE"
-              onPress={() => { }}
-            />
-          </View>
+        <View className="w-full">
+          <SignUpButton
+            variant="primary"
+            title="CONTINUE"
+            onPress={() => setSectionSelected("link")}
+          />
         </View>
 
         {/* Footer */}
         <View className="w-full items-center">
           {/*Help Section Button*/}
-          <Pressable 
+          <Pressable
             onPress={() => setHelpVisible(true)}
             className="w-8 h-8 rounded-full border-white border-2 items-center justify-center mb-3"
           >
@@ -97,9 +74,8 @@ export default function SignUpScreen() {
             © 2023 SNAK. All rights reserved.
           </Text>
         </View>
-
       </SafeAreaView>
       <HelpSection visible={helpVisible} onClose={() => setHelpVisible(false)} />
     </View>
-  );
+  )
 }
