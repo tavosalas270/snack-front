@@ -8,7 +8,7 @@ export default function SignUpScreen() {
   const [selectedWallet, setSelectedWallet] = useState<'create' | 'own' | null>('create');
 
   return (
-    <View className="flex-1">
+    <View className="flex-1 justify-between h-full py-8">
       {/* Background */}
       <Image
         source={require('@/assets/images/FondoUno.png')}
@@ -22,11 +22,11 @@ export default function SignUpScreen() {
         <View className="items-center mb-8">
           <Image
             source={require('@/assets/icons/snack_white.svg')}
-            style={{ width: 140, height: 60 }}
+            style={{ width: 130, height: 110 }}
             contentFit="contain"
           />
 
-          <View className="flex-row items-center mt-6 bg-black/20 rounded-full p-1 border border-white/10">
+          <View className="flex-row items-center rounded-full p-1">
             <View className="px-6 py-2">
               <Text className="text-white font-jost-bold">LOGIN</Text>
             </View>
@@ -37,7 +37,7 @@ export default function SignUpScreen() {
         </View>
 
         {/* Progress Dots */}
-        <View className="flex-row items-center justify-center gap-3 mb-10">
+        <View className="flex-row items-center justify-center gap-3 mt-2">
           <View className="w-6 h-6 rounded-full border-2 border-white items-center justify-center">
             <View className="w-3 h-3 rounded-full bg-snack-pink" />
           </View>
@@ -47,13 +47,13 @@ export default function SignUpScreen() {
         </View>
 
         {/* Header Title */}
-        <Text className="text-white text-3xl font-jost-bold text-center uppercase tracking-widest mb-10 leading-tight">
+        <Text className="text-white text-2xl mt-10 mb-12 font-jost-bold text-center uppercase tracking-widest leading-tight">
           Which type of wallet would you like to use?
         </Text>
 
         {/* Actions Container */}
-        <View className="flex-1 w-full justify-center gap-4 mb-8">
-          {/* Wallet Selection */}
+        <View className="flex-1 w-full gap-4">
+
           <View className="w-full">
             <SignUpButton
               variant="option"
@@ -69,7 +69,7 @@ export default function SignUpScreen() {
             />
           </View>
 
-          {/* Main CTA */}
+
           <View className="w-full">
             <SignUpButton
               variant="primary"
@@ -81,7 +81,7 @@ export default function SignUpScreen() {
 
         {/* Footer */}
         <View className="w-full items-center mb-6">
-          <View className="w-8 h-8 rounded-full border border-white items-center justify-center mb-3">
+          <View className="w-8 h-8 rounded-full border-white border-2 items-center justify-center mb-3">
             <Text className="text-white font-bold">?</Text>
           </View>
           <Text className="text-white/50 text-xs">
