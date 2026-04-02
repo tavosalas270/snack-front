@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import HelpSection from './components/HelpSection';
 import SignUpButton from './components/SignUpButton';
 import Create from './sections/Create';
+import LinkEmail from './sections/LinkEmail';
 
 export default function SignUpScreen() {
   const [sectionSelected, setSectionSelected] = useState<'create' | 'link' | 'code' | null>("create");
@@ -61,6 +62,18 @@ export default function SignUpScreen() {
               />
             </View>
           </Create>
+        )}
+
+        {sectionSelected === "link" && (
+          <LinkEmail>
+            <View className="w-full">
+              <SignUpButton
+                variant="primary"
+                title="CONTINUE"
+                onPress={() => setSectionSelected("code")}
+              />
+            </View>
+          </LinkEmail>
         )}
 
         {/* Footer */}
