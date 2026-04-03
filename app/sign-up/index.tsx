@@ -1,12 +1,13 @@
+import { AntDesign } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { AntDesign } from '@expo/vector-icons';
 import HelpSection from './components/HelpSection';
 import SignUpButton from './components/SignUpButton';
 import Create from './sections/Create';
 import LinkEmail from './sections/LinkEmail';
+import VerifyCode from './sections/VerifyCode';
 
 export default function SignUpScreen() {
   const [sectionSelected, setSectionSelected] = useState<'create' | 'link' | 'code' | null>("create");
@@ -36,7 +37,7 @@ export default function SignUpScreen() {
           {sectionSelected !== "create" && (
             <Pressable
               onPress={handleBack}
-              className="absolute left-0 top-6 w-12 h-12 rounded-full bg-[#fce6f5] items-center justify-center z-10"
+              className="absolute left-0 top-6 w-12 h-12 rounded-full bg-pink-200 items-center justify-center z-10"
             >
               <AntDesign name="arrow-left" size={24} color="#BF0FB4" />
             </Pressable>
@@ -120,6 +121,23 @@ export default function SignUpScreen() {
               />
             </View>
           </LinkEmail>
+        )}
+
+        {sectionSelected === "code" && (
+          <VerifyCode>
+            <View className="w-full">
+              <SignUpButton
+                variant="primary"
+                title="CONTINUE"
+                onPress={() => console.log('Submit Code')}
+              />
+              <Pressable onPress={() => console.log('Request new code')} className="mt-8 mb-4">
+                <Text className="text-snack-pink font-jost-bold text-base text-center uppercase tracking-widest">
+                  REQUEST A NEW CODE
+                </Text>
+              </Pressable>
+            </View>
+          </VerifyCode>
         )}
 
         {/* Footer */}
