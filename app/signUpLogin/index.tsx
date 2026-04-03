@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import HelpSection from './components/HelpSection';
 import Login from './sections/Login';
 import SignUp from './sections/SignUp';
+import LogoGlow from '@/components/LogoGlow';
 
 export default function SignUpLoginScreen() {
   const [tabSelected, setTabSelected] = useState<'login' | 'sign'>('login');
@@ -22,11 +23,14 @@ export default function SignUpLoginScreen() {
       <SafeAreaView className="flex flex-col h-full justify-between px-6">
         {/* Top Section: Logo & Tabs */}
         <View className="items-center relative w-full">
-          <Image
-            source={require('@/assets/icons/snack_white.svg')}
-            style={{ width: 120, height: 100 }}
-            contentFit="contain"
-          />
+          <View className="relative items-center justify-center mt-2">
+            <LogoGlow size={500} />
+            <Image
+              source={require('@/assets/icons/snack_white.svg')}
+              style={{ width: 120, height: 100 }}
+              contentFit="contain"
+            />
+          </View>
 
           <View className="flex-row items-center rounded-full p-1 mt-4">
             <Pressable
