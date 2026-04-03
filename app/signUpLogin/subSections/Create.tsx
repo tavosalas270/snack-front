@@ -1,4 +1,4 @@
-import { Fragment, useState, ReactNode } from 'react';
+import { Fragment, ReactNode, useState } from 'react';
 import { Text, View } from 'react-native';
 import SignUpButton from '../components/SignUpButton';
 
@@ -12,7 +12,7 @@ export default function Create({ children }: CreateProps) {
   return (
     <Fragment>
       {/* Header Title */}
-      <Text className="text-white text-2xl font-jost-bold text-center uppercase tracking-widest leading-tight">
+      <Text className="text-white text-2xl font-jost-bold text-center uppercase tracking-widest leading-tight mb-12">
         Which type of wallet would you like to use?
       </Text>
 

@@ -17,14 +17,14 @@ export default function LinkEmail({ children }: LinkEmailProps) {
       </Text>
 
       {/* Subtitle */}
-      <Text className="text-white text-left font-jost text-base">
+      <Text className="text-white text-left font-jost text-base mb-4">
         Your e-mail address will be directly associated to your new SNAK wallet, and it will be used as your main ID to use this App.
       </Text>
 
       {/* Actions Container */}
       <View className="flex flex-col w-full mb-6">
         {/* Email Input */}
-        <View className="w-full bg-black/20 rounded-2xl py-4 mb-8">
+        <View className="w-full bg-black/20 rounded-2xl py-4 mb-4">
           <TextInput
             value={email}
             onChangeText={setEmail}

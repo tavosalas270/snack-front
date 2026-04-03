@@ -30,7 +30,7 @@ export default function VerifyCode({ children }: VerifyCodeProps) {
   return (
     <Fragment>
       {/* Header Title */}
-      <Text className="text-white text-2xl font-jost-bold text-center uppercase tracking-widest leading-tight">
+      <Text className="text-white text-2xl font-jost-bold text-center uppercase tracking-widest leading-tight mb-4">
         PLEASE ENTER YOUR{'\n'}VERIFICATION CODE
       </Text>
 
@@ -40,7 +40,7 @@ export default function VerifyCode({ children }: VerifyCodeProps) {
       </Text>
 
       {/* Actions Container */}
-      <View className="flex flex-col w-full mb-6">
+      <View className="flex flex-col w-full mb-4">
         {/* Code Inputs */}
         <View className="flex-row justify-between mb-8 w-full px-2">
           {[0, 1, 2, 3, 4].map((index) => (

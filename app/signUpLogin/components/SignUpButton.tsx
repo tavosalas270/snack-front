@@ -13,14 +13,13 @@ export default function SignUpButton({ title, variant = 'primary', selected, ...
       <TouchableOpacity
         activeOpacity={0.8}
         {...props}
-        className="w-full shadow-lg rounded-full overflow-hidden"
-        style={{ borderRadius: 9999 }}
+        className="w-full shadow-lg overflow-hidden"
       >
         <LinearGradient
           colors={['#0076FF', '#00E4E4']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
-          className="w-full py-6 items-center justify-center rounded-full"
+          className="w-full py-6 items-center justify-center"
           style={{ borderRadius: 9999 }}
         >
           <Text className="text-white text-xl font-jost-bold uppercase tracking-wider">
