@@ -24,7 +24,7 @@ export default function LinkEmail({ children }: LinkEmailProps) {
       {/* Actions Container */}
       <View className="flex flex-col w-full mb-6">
         {/* Email Input */}
-        <View className="w-full bg-black/20 rounded-2xl py-4 mb-4">
+        <View className="w-full bg-black/20 rounded-2xl py-2 mb-4">
           <TextInput
             value={email}
             onChangeText={setEmail}

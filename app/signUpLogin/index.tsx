@@ -7,7 +7,7 @@ import Login from './sections/Login';
 import SignUp from './sections/SignUp';
 
 export default function SignUpLoginScreen() {
-  const [tabSelected, setTabSelected] = useState<'login' | 'sign'>('sign');
+  const [tabSelected, setTabSelected] = useState<'login' | 'sign'>('login');
   const [helpVisible, setHelpVisible] = useState(false);
 
   return (
@@ -29,14 +29,14 @@ export default function SignUpLoginScreen() {
           />
 
           <View className="flex-row items-center rounded-full p-1 mt-4">
-            <Pressable 
-              onPress={() => setTabSelected('login')} 
+            <Pressable
+              onPress={() => setTabSelected('login')}
               className={`px-6 py-2 rounded-full overflow-hidden ${tabSelected === 'login' ? 'bg-snack-pink' : ''}`}
             >
               <Text className="text-white font-jost-bold">LOGIN</Text>
             </Pressable>
-            <Pressable 
-              onPress={() => setTabSelected('sign')} 
+            <Pressable
+              onPress={() => setTabSelected('sign')}
               className={`px-6 py-2 rounded-full overflow-hidden ${tabSelected === 'sign' ? 'bg-snack-pink' : ''}`}
             >
               <Text className="text-white font-jost-bold">SIGN UP</Text>
