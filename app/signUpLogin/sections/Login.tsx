@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Text, TextInput, View } from 'react-native';
+import { router } from 'expo-router';
 import SignUpButton from '../components/SignUpButton';
 
 export default function Login() {
@@ -37,7 +38,7 @@ export default function Login() {
         <SignUpButton
           variant="primary"
           title="LOG IN"
-          onPress={() => console.log('Login')}
+          onPress={() => router.push('/watch' as any)}
         />
       </View>
     </View>
