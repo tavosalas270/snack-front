@@ -40,7 +40,7 @@ export default function RootLayout() {
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-        <Stack.Screen name="sign-up/index" />
+        <Stack.Screen name="signUpLogin/index" />
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>
