@@ -86,20 +86,10 @@ export default function SignUp() {
       )}
 
       {subSectionSelected === "code" && (
-        <VerifyCode>
-          <View className="w-full">
-            <SignUpButton
-              variant="primary"
-              title="CONTINUE"
-              onPress={() => console.log('Submit Code')}
-            />
-            <Pressable onPress={() => console.log('Request new code')} className="mt-8 mb-4">
-              <Text className="text-snack-pink font-jost-bold text-base text-center uppercase tracking-widest">
-                REQUEST A NEW CODE
-              </Text>
-            </Pressable>
-          </View>
-        </VerifyCode>
+        <VerifyCode
+          onContinue={(data) => console.log('Submit Code', data)}
+          onRequestNewCode={() => console.log('Request new code')}
+        />
       )}
     </View>
   );
