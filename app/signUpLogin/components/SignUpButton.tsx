@@ -13,7 +13,7 @@ export default function SignUpButton({ title, variant = 'primary', selected, ...
       <TouchableOpacity
         activeOpacity={0.8}
         {...props}
-        className="w-full shadow-lg overflow-hidden"
+        className={`w-full shadow-lg overflow-hidden ${props.disabled ? 'opacity-50' : 'opacity-100'}`}
       >
         <LinearGradient
           colors={['#0076FF', '#00E4E4']}

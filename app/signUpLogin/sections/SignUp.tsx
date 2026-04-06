@@ -82,15 +82,7 @@ export default function SignUp() {
       )}
 
       {subSectionSelected === "link" && (
-        <LinkEmail>
-          <View className="w-full">
-            <SignUpButton
-              variant="primary"
-              title="CONTINUE"
-              onPress={() => setSubSectionSelected("code")}
-            />
-          </View>
-        </LinkEmail>
+        <LinkEmail onContinue={() => setSubSectionSelected("code")} />
       )}
 
       {subSectionSelected === "code" && (
