@@ -6,8 +6,17 @@ import HelpSection from './components/HelpSection';
 import Login from './sections/Login';
 import SignUp from './sections/SignUp';
 import LogoGlow from '@/components/LogoGlow';
+import { SignUpLoginProvider } from './context/SignUpLoginContext';
 
 export default function SignUpLoginScreen() {
+  return (
+    <SignUpLoginProvider>
+      <SignUpLoginScreenContent />
+    </SignUpLoginProvider>
+  );
+}
+
+function SignUpLoginScreenContent() {
   const [tabSelected, setTabSelected] = useState<'login' | 'sign'>('login');
   const [helpVisible, setHelpVisible] = useState(false);
 

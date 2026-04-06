@@ -1,13 +1,13 @@
 import { AntDesign } from '@expo/vector-icons';
-import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import SignUpButton from '../components/SignUpButton';
 import Create from '../subSections/Create';
 import LinkEmail from '../subSections/LinkEmail';
 import VerifyCode from '../subSections/VerifyCode';
+import { useSignUpLoginContext } from '../context/SignUpLoginContext';
 
 export default function SignUp() {
-  const [subSectionSelected, setSubSectionSelected] = useState<'create' | 'link' | 'code' | null>("create");
+  const { subSectionSelected, setSubSectionSelected } = useSignUpLoginContext();
 
   const handleBack = () => {
     if (subSectionSelected === 'code') {
