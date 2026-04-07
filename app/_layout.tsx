@@ -15,7 +15,7 @@ import SplashScreenComponent from '@/components/SplashScreen';
 SplashScreen.preventAutoHideAsync();
 
 export const unstable_settings = {
-  anchor: '(tabs)',
+  anchor: 'signUpLogin',
 };
 
 export default function RootLayout() {
@@ -49,9 +49,8 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
         <Stack.Screen name="signUpLogin/index" />
+        <Stack.Screen name="watch/index" />
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>
