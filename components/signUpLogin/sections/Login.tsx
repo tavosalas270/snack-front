@@ -1,8 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { router } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
 import { Text, TextInput, View } from 'react-native';
 import { SignUpButton } from '../components';
+import { useLogin } from '../hooks/useLogin';
 import { LoginFormValues, loginSchema } from '../interfaces';
 
 export default function Login() {
@@ -19,9 +19,10 @@ export default function Login() {
     mode: 'onChange',
   });
 
+  const loginMutation = useLogin();
+
   const onSubmit = (data: LoginFormValues) => {
-    // Navigate on successful validate
-    router.push('/watch' as any);
+    loginMutation.mutate({ email: data.email, password: data.password });
   };
 
   return (
@@ -83,12 +84,18 @@ export default function Login() {
         )}
       </View>
 
+      {loginMutation.isError && (
+        <Text className="text-red-500 text-center mb-4 font-jost">
+          {loginMutation.error instanceof Error ? loginMutation.error.message : 'Error al iniciar sesión'}
+        </Text>
+      )}
+
       <View className="w-full">
         <SignUpButton
           variant="primary"
-          title="LOG IN"
+          title={loginMutation.isPending ? "LOADING..." : "LOG IN"}
           onPress={handleSubmit(onSubmit)}
-          disabled={!isValid}
+          disabled={!isValid || loginMutation.isPending}
         />
       </View>
     </View>
