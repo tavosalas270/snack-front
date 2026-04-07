@@ -1,9 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Fragment, useRef } from 'react';
+import { Fragment, useRef, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import { z } from 'zod';
 import SignUpButton from '../components/SignUpButton';
+import { useSignUpLoginContext } from '../context/SignUpLoginContext';
 
 const verifyCodeSchema = z.object({
   code: z.array(z.string().min(1)).length(5),
@@ -17,6 +18,7 @@ interface VerifyCodeProps {
 }
 
 export default function VerifyCode({ onContinue, onRequestNewCode }: VerifyCodeProps) {
+  const { verifyCodeData, setVerifyCodeData } = useSignUpLoginContext();
   const inputRefs = useRef<Array<TextInput | null>>([]);
 
   const {
@@ -27,11 +29,16 @@ export default function VerifyCode({ onContinue, onRequestNewCode }: VerifyCodeP
     formState: { isValid },
   } = useForm<VerifyCodeFormValues>({
     resolver: zodResolver(verifyCodeSchema),
-    defaultValues: {
-      code: ['', '', '', '', ''],
-    },
+    defaultValues: verifyCodeData,
     mode: 'onChange',
   });
+
+  // Save changes to context on unmount
+  useEffect(() => {
+    return () => {
+      setVerifyCodeData(getValues());
+    };
+  }, [getValues, setVerifyCodeData]);
 
   const handleCodeChange = (text: string, index: number, onChange: (...event: any[]) => void) => {
     onChange(text); // update react-hook-form state
@@ -52,6 +59,7 @@ export default function VerifyCode({ onContinue, onRequestNewCode }: VerifyCodeP
   };
 
   const onSubmit = (data: VerifyCodeFormValues) => {
+    setVerifyCodeData(data);
     onContinue(data);
   };
 

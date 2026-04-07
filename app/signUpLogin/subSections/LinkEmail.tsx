@@ -1,9 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Fragment } from 'react';
+import { Fragment, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import { z } from 'zod';
 import SignUpButton from '../components/SignUpButton';
+import { useSignUpLoginContext } from '../context/SignUpLoginContext';
 
 const linkEmailSchema = z.object({
   email: z.email('Invalid e-mail format'),
@@ -19,24 +20,33 @@ interface LinkEmailProps {
 }
 
 export default function LinkEmail({ onContinue }: LinkEmailProps) {
+  const { linkEmailData, setLinkEmailData } = useSignUpLoginContext();
+
   const {
     control,
     handleSubmit,
     setValue,
     watch,
+    getValues,
     formState: { errors, isValid },
   } = useForm<LinkEmailFormValues>({
     resolver: zodResolver(linkEmailSchema),
-    defaultValues: {
-      email: '',
-      acceptedTerms: false,
-    },
+    defaultValues: linkEmailData,
     mode: 'onChange',
   });
+
+  // Save changes to context on unmount so they are retained for handleBack or tab switch
+  useEffect(() => {
+    return () => {
+      setLinkEmailData(getValues());
+    };
+  }, [getValues, setLinkEmailData]);
 
   const acceptedTerms = watch('acceptedTerms');
 
   const onSubmit = (data: LinkEmailFormValues) => {
+    // Also save manually when continuing just in case
+    setLinkEmailData(data);
     onContinue(data);
   };
 
