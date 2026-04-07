@@ -2,8 +2,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { router } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
 import { Text, TextInput, View } from 'react-native';
-import SignUpButton from '../components/SignUpButton';
-import { loginSchema, LoginFormValues } from '../interfaces/login';
+import { SignUpButton } from '../components';
+import { loginSchema, LoginFormValues } from '../interfaces';
 
 export default function Login() {
   const {

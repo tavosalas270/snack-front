@@ -1,15 +1,5 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
-
-type SubSectionType = 'create' | 'link' | 'code' | null;
-
-export interface LinkEmailData {
-  email: string;
-  acceptedTerms: boolean;
-}
-
-export interface VerifyCodeData {
-  code: string[];
-}
+import { createContext, ReactNode, useContext, useState } from 'react';
+import { LinkEmailData, SubSectionType, VerifyCodeData } from '../interfaces';
 
 interface SignUpLoginContextProps {
   subSectionSelected: SubSectionType;

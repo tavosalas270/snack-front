@@ -15,10 +15,23 @@ export const verifyCodeSchema = z.object({
   code: z.array(z.string().min(1)).length(5),
 });
 
+// ─── Sub-section types ───────────────────────────────────────────────────────
+export type SubSectionType = 'create' | 'link' | 'code' | null;
+
 // ─── Form value types ────────────────────────────────────────────────────────
 
 export type LinkEmailFormValues = z.infer<typeof linkEmailSchema>;
 export type VerifyCodeFormValues = z.infer<typeof verifyCodeSchema>;
+
+// ─── Form data types ────────────────────────────────────────────────────────
+export interface LinkEmailData {
+  email: string;
+  acceptedTerms: boolean;
+}
+
+export interface VerifyCodeData {
+  code: string[];
+}
 
 // ─── Component props ─────────────────────────────────────────────────────────
 

@@ -1,9 +1,7 @@
 import { AntDesign } from '@expo/vector-icons';
 import { Pressable, Text, View } from 'react-native';
-import SignUpButton from '../components/SignUpButton';
-import Create from '../subSections/Create';
-import LinkEmail from '../subSections/LinkEmail';
-import VerifyCode from '../subSections/VerifyCode';
+import { SignUpButton } from '../components';
+import { Create, LinkEmail, VerifyCode } from '../subSections';
 import { useSignUpLoginContext } from '../context/SignUpLoginContext';
 
 export default function SignUp() {
