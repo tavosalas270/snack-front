@@ -4,7 +4,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import SignUpButton from '../components/SignUpButton';
 import { useSignUpLoginContext } from '../context/SignUpLoginContext';
-import { linkEmailSchema, LinkEmailFormValues, LinkEmailProps } from '../interfaces/signup';
+import { LinkEmailFormValues, LinkEmailProps, linkEmailSchema } from '../interfaces/signup';
 
 export default function LinkEmail({ onContinue }: LinkEmailProps) {
   const { linkEmailData, setLinkEmailData } = useSignUpLoginContext();

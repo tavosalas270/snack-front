@@ -1,12 +1,12 @@
+import LogoGlow from '@/components/LogoGlow';
 import { Image } from 'expo-image';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import HelpSection from './components/HelpSection';
+import { SignUpLoginProvider } from './context/SignUpLoginContext';
 import Login from './sections/Login';
 import SignUp from './sections/SignUp';
-import LogoGlow from '@/components/LogoGlow';
-import { SignUpLoginProvider } from './context/SignUpLoginContext';
 
 export default function SignUpLoginScreen() {
   return (

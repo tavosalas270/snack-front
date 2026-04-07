@@ -1,8 +1,8 @@
 import { AntDesign } from '@expo/vector-icons';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { SignUpButton } from '../components';
-import { Create, LinkEmail, VerifyCode } from '../subSections';
 import { useSignUpLoginContext } from '../context/SignUpLoginContext';
+import { Create, LinkEmail, VerifyCode } from '../subSections';
 
 export default function SignUp() {
   const { subSectionSelected, setSubSectionSelected } = useSignUpLoginContext();

@@ -1,10 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Fragment, useRef, useEffect } from 'react';
+import { Fragment, useEffect, useRef } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import SignUpButton from '../components/SignUpButton';
 import { useSignUpLoginContext } from '../context/SignUpLoginContext';
-import { verifyCodeSchema, VerifyCodeFormValues, VerifyCodeProps } from '../interfaces/signup';
+import { VerifyCodeFormValues, VerifyCodeProps, verifyCodeSchema } from '../interfaces/signup';
 
 export default function VerifyCode({ onContinue, onRequestNewCode }: VerifyCodeProps) {
   const { verifyCodeData, setVerifyCodeData } = useSignUpLoginContext();
@@ -31,7 +31,7 @@ export default function VerifyCode({ onContinue, onRequestNewCode }: VerifyCodeP
 
   const handleCodeChange = (text: string, index: number, onChange: (...event: any[]) => void) => {
     onChange(text); // update react-hook-form state
-    
+
     // Auto-advance to the next input if a character is entered
     if (text && index < 4) {
       inputRefs.current[index + 1]?.focus();

@@ -3,7 +3,7 @@ import { router } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
 import { Text, TextInput, View } from 'react-native';
 import { SignUpButton } from '../components';
-import { loginSchema, LoginFormValues } from '../interfaces';
+import { LoginFormValues, loginSchema } from '../interfaces';
 
 export default function Login() {
   const {
