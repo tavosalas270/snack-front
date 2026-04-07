@@ -2,22 +2,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Fragment, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Pressable, Text, TextInput, View } from 'react-native';
-import { z } from 'zod';
 import SignUpButton from '../components/SignUpButton';
 import { useSignUpLoginContext } from '../context/SignUpLoginContext';
-
-const linkEmailSchema = z.object({
-  email: z.email('Invalid e-mail format'),
-  acceptedTerms: z.boolean().refine((val) => val === true, {
-    message: 'You must accept the terms and conditions',
-  }),
-});
-
-type LinkEmailFormValues = z.infer<typeof linkEmailSchema>;
-
-interface LinkEmailProps {
-  onContinue: (data: LinkEmailFormValues) => void;
-}
+import { linkEmailSchema, LinkEmailFormValues, LinkEmailProps } from '../interfaces/signup';
 
 export default function LinkEmail({ onContinue }: LinkEmailProps) {
   const { linkEmailData, setLinkEmailData } = useSignUpLoginContext();

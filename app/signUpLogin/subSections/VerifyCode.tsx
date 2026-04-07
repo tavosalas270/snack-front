@@ -2,20 +2,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Fragment, useRef, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Pressable, Text, TextInput, View } from 'react-native';
-import { z } from 'zod';
 import SignUpButton from '../components/SignUpButton';
 import { useSignUpLoginContext } from '../context/SignUpLoginContext';
-
-const verifyCodeSchema = z.object({
-  code: z.array(z.string().min(1)).length(5),
-});
-
-export type VerifyCodeFormValues = z.infer<typeof verifyCodeSchema>;
-
-interface VerifyCodeProps {
-  onContinue: (data: VerifyCodeFormValues) => void;
-  onRequestNewCode: () => void;
-}
+import { verifyCodeSchema, VerifyCodeFormValues, VerifyCodeProps } from '../interfaces/signup';
 
 export default function VerifyCode({ onContinue, onRequestNewCode }: VerifyCodeProps) {
   const { verifyCodeData, setVerifyCodeData } = useSignUpLoginContext();

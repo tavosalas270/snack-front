@@ -1,11 +1,7 @@
 import { AntDesign } from '@expo/vector-icons';
 import { useState } from 'react';
 import { Modal, Pressable, ScrollView, Text, View } from 'react-native';
-
-type HelpSectionProps = {
-  visible: boolean;
-  onClose: () => void;
-};
+import { HelpSectionProps } from '../interfaces/signup';
 
 export default function HelpSection({ visible, onClose }: HelpSectionProps) {
   const [expandedSection, setExpandedSection] = useState<string | null>('What is a wallet?');

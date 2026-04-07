@@ -1,11 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { Text, TouchableOpacity, TouchableOpacityProps } from 'react-native';
-
-interface SignUpButtonProps extends TouchableOpacityProps {
-  title: string;
-  variant?: 'primary' | 'secondary' | 'option';
-  selected?: boolean;
-}
+import { Text, TouchableOpacity } from 'react-native';
+import { SignUpButtonProps } from '../interfaces/signup';
 
 export default function SignUpButton({ title, variant = 'primary', selected, ...props }: SignUpButtonProps) {
   if (variant === 'primary') {

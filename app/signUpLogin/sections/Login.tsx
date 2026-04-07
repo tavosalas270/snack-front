@@ -2,15 +2,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { router } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
 import { Text, TextInput, View } from 'react-native';
-import { z } from 'zod';
 import SignUpButton from '../components/SignUpButton';
-
-const loginSchema = z.object({
-  email: z.email('Invalid e-mail format'),
-  password: z.string().min(1, 'Password is required'),
-});
-
-export type LoginFormValues = z.infer<typeof loginSchema>;
+import { loginSchema, LoginFormValues } from '../interfaces/login';
 
 export default function Login() {
   const {
