@@ -8,7 +8,8 @@ export const signUp = async (email: string, pass: string) => {
 };
 
 export const login = async ({ email, password }: LoginParams): Promise<LoginResponse> => {
-    const baseUrl = process.env.SERVER_URL;
+    const baseUrl = process.env.EXPO_PUBLIC_SERVER_URL;
+    console.log(baseUrl)
     const response = await fetch(`${baseUrl}/api/login/`, {
         method: 'POST',
         headers: {

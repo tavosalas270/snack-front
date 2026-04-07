@@ -1,9 +1,9 @@
-import { Image } from 'expo-image';
-import { useVideoPlayer, VideoView } from 'expo-video';
-import { StyleSheet, View, Text } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import LogoGlow from '@/components/LogoGlow';
+import { Image } from 'expo-image';
 import * as ScreenOrientation from 'expo-screen-orientation';
+import { useVideoPlayer, VideoView } from 'expo-video';
+import { StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const VIDEO_SOURCE = require('../../antigravity/resources/prueba.mp4');
 
@@ -30,14 +30,14 @@ export default function WatchScreen() {
         <Text className="text-white font-cherry-bomb text-4xl mb-8 z-10" style={{ textShadowColor: 'rgba(0, 0, 0, 0.75)', textShadowOffset: { width: 0, height: 2 }, textShadowRadius: 4 }}>
           SNACK TV
         </Text>
-        
+
         <View className="w-11/12 max-w-md h-72 sm:h-80 md:h-96 z-10 self-center bg-black/40 rounded-3xl p-[2px] border border-snack-pink/50">
           <View className="w-full h-full rounded-3xl overflow-hidden bg-black/80">
-            <VideoView 
-              style={{ width: '100%', height: '100%' }} 
-              player={player} 
-              allowsFullscreen 
-              allowsPictureInPicture 
+            <VideoView
+              style={{ width: '100%', height: '100%' }}
+              player={player}
+              fullscreenOptions={{ enable: true }}
+              allowsPictureInPicture
               onFullscreenEnter={() => {
                 ScreenOrientation.unlockAsync();
               }}

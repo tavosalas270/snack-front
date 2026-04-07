@@ -8,10 +8,6 @@ interface SignUpLoginContextProps {
   setLinkEmailData: (data: LinkEmailData) => void;
   verifyCodeData: VerifyCodeData;
   setVerifyCodeData: (data: VerifyCodeData) => void;
-  accessToken: string | null;
-  setAccessToken: (token: string) => void;
-  refreshToken: string | null;
-  setRefreshToken: (token: string) => void;
 }
 
 const SignUpLoginContext = createContext<SignUpLoginContextProps | undefined>(undefined);
@@ -26,26 +22,21 @@ export function SignUpLoginProvider({ children }: { children: ReactNode }) {
     code: ['', '', '', '', ''],
   });
 
-  const [accessToken, setAccessToken] = useState<string | null>(null);
-  const [refreshToken, setRefreshToken] = useState<string | null>(null);
-
   return (
     <SignUpLoginContext.Provider value={{
       subSectionSelected, setSubSectionSelected,
       linkEmailData, setLinkEmailData,
       verifyCodeData, setVerifyCodeData,
-      accessToken, setAccessToken,
-      refreshToken, setRefreshToken
     }}>
       {children}
     </SignUpLoginContext.Provider>
   );
 }
 
-export function useSignUpLoginContext() {
+export function useSignUpContext() {
   const context = useContext(SignUpLoginContext);
   if (context === undefined) {
-    throw new Error('useSignUpLoginContext must be used within a SignUpLoginProvider');
+    throw new Error('useSignUpContext must be used within a SignUpProvider');
   }
   return context;
 }

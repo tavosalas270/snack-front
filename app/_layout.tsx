@@ -1,16 +1,19 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import * as SplashScreen from 'expo-splash-screen';
-import { useEffect, useState } from 'react';
-import { useFonts, CherryBombOne_400Regular } from '@expo-google-fonts/cherry-bomb-one';
+import { useLoginContext } from '@/components/signUpLogin/context/LoginContext';
+import { CherryBombOne_400Regular, useFonts } from '@expo-google-fonts/cherry-bomb-one';
 import { Jost_400Regular, Jost_700Bold } from '@expo-google-fonts/jost';
+import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Stack, useRouter, useSegments } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
+import { StatusBar } from 'expo-status-bar';
+import { useEffect, useState } from 'react';
 
-import '../global.css';
 import 'react-native-reanimated';
+import '../global.css';
 
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { LoginProvider } from '@/components/signUpLogin/context/LoginContext';
 import SplashScreenComponent from '@/components/SplashScreen';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -18,7 +21,29 @@ export const unstable_settings = {
   anchor: 'signUpLogin',
 };
 
+function InitialLayout() {
+  const { accessToken } = useLoginContext();
+  const segments = useSegments();
+  const router = useRouter();
+
+  useEffect(() => {
+    const inWatchGroup = segments.length > 0 && segments[0] === 'watch';
+
+    if (!accessToken && inWatchGroup) {
+      router.replace('/signUpLogin');
+    }
+  }, [accessToken, segments]);
+
+  return (
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="signUpLogin/index" />
+      <Stack.Screen name="watch/index" />
+    </Stack>
+  );
+}
+
 export default function RootLayout() {
+  const queryClient = new QueryClient();
   const colorScheme = useColorScheme();
   const [loaded, error] = useFonts({
     CherryBombOne_400Regular,
@@ -33,7 +58,7 @@ export default function RootLayout() {
       SplashScreen.hideAsync();
       const timer = setTimeout(() => {
         setShowSplash(false);
-      }, 2500); // Retener el splash visual por 2.5s para apreciar la animación/diseño
+      }, 2500);
       return () => clearTimeout(timer);
     }
   }, [loaded, error]);
@@ -47,12 +72,13 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="signUpLogin/index" />
-        <Stack.Screen name="watch/index" />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+        <LoginProvider>
+          <InitialLayout />
+        </LoginProvider>
+        <StatusBar style="auto" />
+      </ThemeProvider>
+    </QueryClientProvider>
   );
 }

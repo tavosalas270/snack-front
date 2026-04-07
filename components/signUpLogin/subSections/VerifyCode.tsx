@@ -3,11 +3,11 @@ import { Fragment, useEffect, useRef } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import SignUpButton from '../components/SignUpButton';
-import { useSignUpLoginContext } from '../context/SignUpLoginContext';
+import { useSignUpContext } from '../context/SignUpContext';
 import { VerifyCodeFormValues, VerifyCodeProps, verifyCodeSchema } from '../interfaces/signup';
 
 export default function VerifyCode({ onContinue, onRequestNewCode }: VerifyCodeProps) {
-  const { verifyCodeData, setVerifyCodeData } = useSignUpLoginContext();
+  const { verifyCodeData, setVerifyCodeData } = useSignUpContext();
   const inputRefs = useRef<Array<TextInput | null>>([]);
 
   const {

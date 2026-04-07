@@ -3,11 +3,11 @@ import { Fragment, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import { SignUpButton } from '../components';
-import { useSignUpLoginContext } from '../context/SignUpLoginContext';
+import { useSignUpContext } from '../context/SignUpContext';
 import { LinkEmailFormValues, LinkEmailProps, linkEmailSchema } from '../interfaces';
 
 export default function LinkEmail({ onContinue }: LinkEmailProps) {
-  const { linkEmailData, setLinkEmailData } = useSignUpLoginContext();
+  const { linkEmailData, setLinkEmailData } = useSignUpContext();
 
   const {
     control,
