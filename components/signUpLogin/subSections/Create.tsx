@@ -1,7 +1,7 @@
 import { Fragment, useState } from 'react';
 import { Text, View } from 'react-native';
-import SignUpButton from '../components/SignUpButton';
-import { CreateProps } from '../interfaces/signup';
+import { SignUpButton } from '../components';
+import { CreateProps } from '../interfaces';
 
 export default function Create({ children }: CreateProps) {
   const [selectedWallet, setSelectedWallet] = useState<'create' | 'own' | null>('create');

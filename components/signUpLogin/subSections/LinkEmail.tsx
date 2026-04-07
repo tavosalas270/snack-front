@@ -2,9 +2,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Fragment, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Pressable, Text, TextInput, View } from 'react-native';
-import SignUpButton from '../components/SignUpButton';
+import { SignUpButton } from '../components';
 import { useSignUpLoginContext } from '../context/SignUpLoginContext';
-import { LinkEmailFormValues, LinkEmailProps, linkEmailSchema } from '../interfaces/signup';
+import { LinkEmailFormValues, LinkEmailProps, linkEmailSchema } from '../interfaces';
 
 export default function LinkEmail({ onContinue }: LinkEmailProps) {
   const { linkEmailData, setLinkEmailData } = useSignUpLoginContext();
