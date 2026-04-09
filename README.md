@@ -10,6 +10,13 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
    npm install
    ```
 
+   1.2. Relevant dependencies
+   - React Hook Form
+   - Zod
+   - TanStack Query
+   - Nativewind
+   - expo-screen-orientation
+
 2. Start the app
 
    ```bash
