@@ -1,5 +1,5 @@
 import { createContext, ReactNode, useContext, useState } from 'react';
-import { LinkEmailData, SubSectionType, VerifyCodeData } from '../interfaces';
+import { LinkEmailData, SetCredentialsData, SubSectionType, VerifyCodeData } from '../interfaces';
 
 interface SignUpLoginContextProps {
   subSectionSelected: SubSectionType;
@@ -8,6 +8,8 @@ interface SignUpLoginContextProps {
   setLinkEmailData: (data: LinkEmailData) => void;
   verifyCodeData: VerifyCodeData;
   setVerifyCodeData: (data: VerifyCodeData) => void;
+  setCredentialsData: SetCredentialsData;
+  setSetCredentialsData: (data: SetCredentialsData) => void;
 }
 
 const SignUpLoginContext = createContext<SignUpLoginContextProps | undefined>(undefined);
@@ -21,12 +23,18 @@ export function SignUpLoginProvider({ children }: { children: ReactNode }) {
   const [verifyCodeData, setVerifyCodeData] = useState<VerifyCodeData>({
     code: ['', '', '', '', ''],
   });
+  const [setCredentialsData, setSetCredentialsData] = useState<SetCredentialsData>({
+    username: '',
+    password: '',
+    confirmPassword: '',
+  });
 
   return (
     <SignUpLoginContext.Provider value={{
       subSectionSelected, setSubSectionSelected,
       linkEmailData, setLinkEmailData,
       verifyCodeData, setVerifyCodeData,
+      setCredentialsData, setSetCredentialsData,
     }}>
       {children}
     </SignUpLoginContext.Provider>

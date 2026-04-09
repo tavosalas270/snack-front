@@ -14,11 +14,7 @@ export const useLogin = () => {
       router.push('/watch');
     },
     onError: (error) => {
-      if (error.status === 401) {
-        console.log('Error 401');
-      } else {
-        console.error('Error in login:', error);
-      }
+      console.error('Error in login:', error);
     }
   });
 };

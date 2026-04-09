@@ -15,13 +15,30 @@ export const verifyCodeSchema = z.object({
   code: z.array(z.string().min(1)).length(5),
 });
 
+export const setCredentialsSchema = z
+  .object({
+    username: z.string().min(3, 'Username must be at least 3 characters').max(30, 'Username too long'),
+    password: z.string().min(8, 'Password must be at least 8 characters'),
+    confirmPassword: z.string().min(1, 'Please confirm your password'),
+  })
+  .superRefine(({ password, confirmPassword }, ctx) => {
+    if (confirmPassword !== password) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Passwords do not match',
+        path: ['confirmPassword'],
+      });
+    }
+  });
+
 // ─── Sub-section types ───────────────────────────────────────────────────────
-export type SubSectionType = 'create' | 'link' | 'code' | null;
+export type SubSectionType = 'create' | 'link' | 'code' | 'credentials' | null;
 
 // ─── Form value types ────────────────────────────────────────────────────────
 
 export type LinkEmailFormValues = z.infer<typeof linkEmailSchema>;
 export type VerifyCodeFormValues = z.infer<typeof verifyCodeSchema>;
+export type SetCredentialsFormValues = z.infer<typeof setCredentialsSchema>;
 
 // ─── Form data types ────────────────────────────────────────────────────────
 export interface LinkEmailData {
@@ -31,6 +48,18 @@ export interface LinkEmailData {
 
 export interface VerifyCodeData {
   code: string[];
+}
+
+export interface SetCredentialsData {
+  username: string;
+  password: string;
+  confirmPassword: string;
+}
+
+export interface SignUpParams {
+  username: string;
+  email: string;
+  password: string;
 }
 
 // ─── Component props ─────────────────────────────────────────────────────────
@@ -46,6 +75,10 @@ export interface LinkEmailProps {
 export interface VerifyCodeProps {
   onContinue: (data: VerifyCodeFormValues) => void;
   onRequestNewCode: () => void;
+}
+
+export interface SetCredentialsProps {
+  onContinue: (data: SetCredentialsFormValues) => void;
 }
 
 export interface SignUpButtonProps extends TouchableOpacityProps {

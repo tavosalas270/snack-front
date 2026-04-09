@@ -2,13 +2,15 @@ import { AntDesign } from '@expo/vector-icons';
 import { Pressable, View } from 'react-native';
 import { SignUpButton } from '../components';
 import { useSignUpContext } from '../context/SignUpContext';
-import { Create, LinkEmail, VerifyCode } from '../subSections';
+import { Create, LinkEmail, SetCredentials, VerifyCode } from '../subSections';
 
 export default function SignUp() {
   const { subSectionSelected, setSubSectionSelected } = useSignUpContext();
 
   const handleBack = () => {
-    if (subSectionSelected === 'code') {
+    if (subSectionSelected === 'credentials') {
+      setSubSectionSelected('code');
+    } else if (subSectionSelected === 'code') {
       setSubSectionSelected('link');
     } else if (subSectionSelected === 'link') {
       setSubSectionSelected('create');
@@ -28,11 +30,11 @@ export default function SignUp() {
       )}
 
       {/* Progress Dots */}
-      <View className="relative flex-row items-center justify-center gap-3 w-[96px] mx-auto mb-12">
+      <View className="relative flex-row items-center justify-center gap-3 w-[132px] mx-auto mb-12">
         {/* Connecting Line */}
         <View className="absolute h-[2px] bg-snack-pink left-2 right-2 top-1/2 -translate-y-1/2 z-0" />
 
-        {/* Dot 1 */}
+        {/* Dot 1 – create */}
         {subSectionSelected === "create" ? (
           <View className="w-6 h-6 rounded-full border-2 border-snack-pink items-center justify-center z-10 bg-[#1E0942]">
             <View className="w-3 h-3 rounded-full bg-white" />
@@ -41,7 +43,7 @@ export default function SignUp() {
           <View className="w-3 h-3 rounded-full bg-snack-pink z-10" />
         )}
 
-        {/* Dot 2 */}
+        {/* Dot 2 – link */}
         {subSectionSelected === "create" ? (
           <View className="w-3 h-3 rounded-full bg-white z-10" />
         ) : subSectionSelected === "link" ? (
@@ -52,7 +54,7 @@ export default function SignUp() {
           <View className="w-3 h-3 rounded-full bg-snack-pink z-10" />
         )}
 
-        {/* Dot 3 */}
+        {/* Dot 3 – code */}
         {subSectionSelected === "create" || subSectionSelected === "link" ? (
           <View className="w-3 h-3 rounded-full bg-white z-10" />
         ) : subSectionSelected === "code" ? (
@@ -63,8 +65,14 @@ export default function SignUp() {
           <View className="w-3 h-3 rounded-full bg-snack-pink z-10" />
         )}
 
-        {/* Dot 4 */}
-        <View className="w-3 h-3 rounded-full bg-white z-10" />
+        {/* Dot 4 – credentials */}
+        {subSectionSelected === "create" || subSectionSelected === "link" || subSectionSelected === "code" ? (
+          <View className="w-3 h-3 rounded-full bg-white z-10" />
+        ) : (
+          <View className="w-6 h-6 rounded-full border-2 border-snack-pink items-center justify-center z-10 bg-[#1E0942]">
+            <View className="w-3 h-3 rounded-full bg-white" />
+          </View>
+        )}
       </View>
 
       {subSectionSelected === "create" && (
@@ -85,8 +93,14 @@ export default function SignUp() {
 
       {subSectionSelected === "code" && (
         <VerifyCode
-          onContinue={(data) => console.log('Submit Code', data)}
+          onContinue={() => setSubSectionSelected("credentials")}
           onRequestNewCode={() => console.log('Request new code')}
+        />
+      )}
+
+      {subSectionSelected === "credentials" && (
+        <SetCredentials
+          onContinue={(data) => console.log('Submit credentials', data)}
         />
       )}
     </View>
