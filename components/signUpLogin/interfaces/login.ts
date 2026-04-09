@@ -12,7 +12,16 @@ export interface LoginParams {
   password: string;
 }
 
-export interface LoginResponse {
+export interface AcessResponse {
   access: string;
   refresh: string;
+}
+
+export interface LoginResponse {
+  token: AcessResponse;
+  status: number;
+}
+
+export interface BadLoginResponse {
+  status: number;
 }

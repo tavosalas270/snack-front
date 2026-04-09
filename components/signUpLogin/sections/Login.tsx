@@ -86,7 +86,9 @@ export default function Login() {
 
       {loginMutation.isError && (
         <Text className="text-red-500 text-center mb-4 font-jost">
-          {loginMutation.error instanceof Error ? loginMutation.error.message : 'Error al iniciar sesión'}
+          {loginMutation.error?.status === 401
+            ? 'Usuario y/o contraseña incorrectos'
+            : 'Error al iniciar sesión'}
         </Text>
       )}
 

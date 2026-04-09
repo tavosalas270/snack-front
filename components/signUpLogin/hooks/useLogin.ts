@@ -1,20 +1,24 @@
 import { useMutation } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import { useLoginContext } from '../context/LoginContext';
-import { LoginParams } from '../interfaces';
+import { BadLoginResponse, LoginParams, LoginResponse } from '../interfaces';
 import { login } from '../services/auth';
 
 export const useLogin = () => {
   const { setAccessToken, setRefreshToken } = useLoginContext();
-  return useMutation({
-    mutationFn: ({ email, password }: LoginParams) => login({ email, password }),
+  return useMutation<LoginResponse, BadLoginResponse, LoginParams>({
+    mutationFn: ({ email, password }) => login({ email, password }),
     onSuccess: (data) => {
-      setAccessToken(data.access);
-      setRefreshToken(data.refresh);
+      setAccessToken(data.token.access);
+      setRefreshToken(data.token.refresh);
       router.push('/watch');
     },
     onError: (error) => {
-      console.log(error);
+      if (error.status === 401) {
+        console.log('Error 401');
+      } else {
+        console.error('Error in login:', error);
+      }
     }
   });
 };

@@ -1,5 +1,4 @@
-import { LoginParams, LoginResponse } from "../interfaces";
-
+import { LoginParams, LoginResponse, BadLoginResponse } from "../interfaces";
 
 export const signUp = async (email: string, pass: string) => {
     // TODO: Implement API logic
@@ -19,8 +18,13 @@ export const login = async ({ email, password }: LoginParams): Promise<LoginResp
     });
 
     if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw { status: response.status } as BadLoginResponse;
     }
 
-    return response.json();
+    const data = await response.json();
+
+    return {
+        token: data,
+        status: response.status
+    }
 };
