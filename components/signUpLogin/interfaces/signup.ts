@@ -17,8 +17,17 @@ export const verifyCodeSchema = z.object({
 
 export const setCredentialsSchema = z
   .object({
-    username: z.string().min(3, 'Username must be at least 3 characters').max(30, 'Username too long'),
-    password: z.string().min(8, 'Password must be at least 8 characters'),
+    username: z
+      .string()
+      .min(5, 'Username must be at least 5 characters')
+      .max(10, 'Username must be at most 10 characters')
+      .regex(/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers, and underscores'),
+    password: z
+      .string()
+      .min(8, 'Password must be at least 8 characters')
+      .regex(/[0-9]/, 'Password must include at least one number')
+      .regex(/[A-Z]/, 'Password must include at least one uppercase letter')
+      .regex(/[^a-zA-Z0-9]/, 'Password must include at least one special character'),
     confirmPassword: z.string().min(1, 'Please confirm your password'),
   })
   .superRefine(({ password, confirmPassword }, ctx) => {
