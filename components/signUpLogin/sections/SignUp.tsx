@@ -99,9 +99,7 @@ export default function SignUp() {
       )}
 
       {subSectionSelected === "credentials" && (
-        <SetCredentials
-          onContinue={(data) => console.log('Submit credentials', data)}
-        />
+        <SetCredentials />
       )}
     </View>
   );

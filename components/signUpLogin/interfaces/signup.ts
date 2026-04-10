@@ -62,6 +62,17 @@ export interface SignUpParams {
   password: string;
 }
 
+export interface SignUpResponse {
+  status: string;
+  message: string;
+  code: number;
+  data: {
+    username: string;
+    email: string;
+    password: string;
+  }
+}
+
 // ─── Component props ─────────────────────────────────────────────────────────
 
 export interface CreateProps {
@@ -77,9 +88,7 @@ export interface VerifyCodeProps {
   onRequestNewCode: () => void;
 }
 
-export interface SetCredentialsProps {
-  onContinue: (data: SetCredentialsFormValues) => void;
-}
+export interface SetCredentialsProps {}
 
 export interface SignUpButtonProps extends TouchableOpacityProps {
   title: string;

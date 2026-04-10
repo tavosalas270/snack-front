@@ -2,6 +2,8 @@ import { createContext, ReactNode, useContext, useState } from 'react';
 import { LinkEmailData, SetCredentialsData, SubSectionType, VerifyCodeData } from '../interfaces';
 
 interface SignUpLoginContextProps {
+  tabSelected: 'login' | 'sign';
+  setTabSelected: (tab: 'login' | 'sign') => void;
   subSectionSelected: SubSectionType;
   setSubSectionSelected: (section: SubSectionType) => void;
   linkEmailData: LinkEmailData;
@@ -15,6 +17,7 @@ interface SignUpLoginContextProps {
 const SignUpLoginContext = createContext<SignUpLoginContextProps | undefined>(undefined);
 
 export function SignUpLoginProvider({ children }: { children: ReactNode }) {
+  const [tabSelected, setTabSelected] = useState<'login' | 'sign'>('login');
   const [subSectionSelected, setSubSectionSelected] = useState<SubSectionType>('create');
   const [linkEmailData, setLinkEmailData] = useState<LinkEmailData>({
     email: '',
@@ -31,6 +34,7 @@ export function SignUpLoginProvider({ children }: { children: ReactNode }) {
 
   return (
     <SignUpLoginContext.Provider value={{
+      tabSelected, setTabSelected,
       subSectionSelected, setSubSectionSelected,
       linkEmailData, setLinkEmailData,
       verifyCodeData, setVerifyCodeData,

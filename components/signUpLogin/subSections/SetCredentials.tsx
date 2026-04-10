@@ -4,10 +4,12 @@ import { Controller, useForm } from 'react-hook-form';
 import { Text, TextInput, View } from 'react-native';
 import { SignUpButton } from '../components';
 import { useSignUpContext } from '../context/SignUpContext';
+import { useSignUpForm } from '../hooks/useSignUpForm';
 import { SetCredentialsFormValues, SetCredentialsProps, setCredentialsSchema } from '../interfaces';
 
-export default function SetCredentials({ onContinue }: SetCredentialsProps) {
-  const { setCredentialsData, setSetCredentialsData } = useSignUpContext();
+export default function SetCredentials() {
+  const { setCredentialsData, setSetCredentialsData, linkEmailData } = useSignUpContext();
+  const signUpMutation = useSignUpForm();
 
   const {
     control,
@@ -29,7 +31,11 @@ export default function SetCredentials({ onContinue }: SetCredentialsProps) {
 
   const onSubmit = (data: SetCredentialsFormValues) => {
     setSetCredentialsData(data);
-    onContinue(data);
+    signUpMutation.mutate({
+      username: data.username,
+      email: linkEmailData.email,
+      password: data.password,
+    });
   };
 
   return (
@@ -130,10 +136,17 @@ export default function SetCredentials({ onContinue }: SetCredentialsProps) {
         <View className="w-full">
           <SignUpButton
             variant="primary"
-            title="CONTINUE"
+            title={signUpMutation.isPending ? 'LOADING...' : 'CONTINUE'}
             onPress={handleSubmit(onSubmit)}
-            disabled={!isValid}
+            disabled={!isValid || signUpMutation.isPending}
           />
+          {signUpMutation.isError && (
+            <Text className="text-red-500 text-center mt-3 font-jost">
+              {signUpMutation.error?.status === 409
+                ? 'Username or email already in use'
+                : 'Something went wrong. Please try again.'}
+            </Text>
+          )}
         </View>
       </View>
     </Fragment>

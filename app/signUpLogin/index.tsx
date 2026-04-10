@@ -1,6 +1,7 @@
 import LogoGlow from '@/components/LogoGlow';
 import { HelpSection } from '@/components/signUpLogin/components';
 import { SignUpLoginProvider } from '@/components/signUpLogin/context/SignUpContext';
+import { useSignUpContext } from '@/components/signUpLogin/context/SignUpContext';
 import { Login, SignUp } from '@/components/signUpLogin/sections';
 import { Image } from 'expo-image';
 import { useState } from 'react';
@@ -16,7 +17,7 @@ export default function SignUpLoginScreen() {
 }
 
 function SignUpLoginScreenContent() {
-  const [tabSelected, setTabSelected] = useState<'login' | 'sign'>('login');
+  const { tabSelected, setTabSelected } = useSignUpContext();
   const [helpVisible, setHelpVisible] = useState(false);
 
   return (
