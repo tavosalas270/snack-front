@@ -3,7 +3,7 @@ import { Fragment, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Text, TextInput, View } from 'react-native';
 import { SignUpButton } from '../components';
-import { useSignUpContext } from '../context/SignUpContext';
+import { useSignUpContext } from '../context';
 import { useSignUpForm } from '../hooks/useSignUpForm';
 import { SetCredentialsFormValues, SetCredentialsProps, setCredentialsSchema } from '../interfaces';
 

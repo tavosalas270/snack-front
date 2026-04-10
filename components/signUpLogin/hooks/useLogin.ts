@@ -1,8 +1,8 @@
 import { useMutation } from '@tanstack/react-query';
 import { router } from 'expo-router';
-import { useLoginContext } from '../context/LoginContext';
+import { useLoginContext } from '../context';
 import { BadLoginResponse, LoginParams, LoginResponse } from '../interfaces';
-import { login } from '../services/auth';
+import { login } from '../services';
 
 export const useLogin = () => {
   const { setAccessToken, setRefreshToken } = useLoginContext();

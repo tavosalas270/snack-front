@@ -1,7 +1,6 @@
 import LogoGlow from '@/components/LogoGlow';
 import { HelpSection } from '@/components/signUpLogin/components';
-import { SignUpLoginProvider } from '@/components/signUpLogin/context/SignUpContext';
-import { useSignUpContext } from '@/components/signUpLogin/context/SignUpContext';
+import { SignUpLoginProvider, useSignUpContext } from '@/components/signUpLogin/context';
 import { Login, SignUp } from '@/components/signUpLogin/sections';
 import { Image } from 'expo-image';
 import { useState } from 'react';

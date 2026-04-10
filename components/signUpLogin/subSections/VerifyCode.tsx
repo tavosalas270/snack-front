@@ -3,7 +3,7 @@ import { Fragment, useEffect, useRef } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import SignUpButton from '../components/SignUpButton';
-import { useSignUpContext } from '../context/SignUpContext';
+import { useSignUpContext } from '../context';
 import { VerifyCodeFormValues, VerifyCodeProps, verifyCodeSchema } from '../interfaces/signup';
 
 export default function VerifyCode({ onContinue, onRequestNewCode }: VerifyCodeProps) {

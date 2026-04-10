@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
-import { useSignUpContext } from '../context/SignUpContext';
+import { useSignUpContext } from '../context';
 import { BadLoginResponse, SignUpParams, SignUpResponse } from '../interfaces';
-import { signUp } from '../services/auth';
+import { signUp } from '../services';
 
 export const useSignUpForm = () => {
   const { setTabSelected, setSubSectionSelected } = useSignUpContext();

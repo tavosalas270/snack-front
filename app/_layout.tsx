@@ -1,4 +1,4 @@
-import { useLoginContext } from '@/components/signUpLogin/context/LoginContext';
+import { useLoginContext, LoginProvider } from '@/components/signUpLogin/context';
 import { CherryBombOne_400Regular, useFonts } from '@expo-google-fonts/cherry-bomb-one';
 import { Jost_400Regular, Jost_700Bold } from '@expo-google-fonts/jost';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
@@ -11,7 +11,6 @@ import { useEffect, useState } from 'react';
 import 'react-native-reanimated';
 import '../global.css';
 
-import { LoginProvider } from '@/components/signUpLogin/context/LoginContext';
 import SplashScreenComponent from '@/components/SplashScreen';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
