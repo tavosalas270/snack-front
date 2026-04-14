@@ -13,7 +13,7 @@ export default function Login() {
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: '',
+      identifier: '',
       password: '',
     },
     mode: 'onChange',
@@ -22,7 +22,12 @@ export default function Login() {
   const loginMutation = useLogin();
 
   const onSubmit = (data: LoginFormValues) => {
-    loginMutation.mutate({ email: data.email, password: data.password });
+    const isEmail = data.identifier.includes('@');
+    loginMutation.mutate({ 
+      email: isEmail ? data.identifier : undefined,
+      username: !isEmail ? data.identifier : undefined,
+      password: data.password 
+    });
   };
 
   return (
@@ -31,29 +36,29 @@ export default function Login() {
         WELCOME TO SNAK
       </Text>
 
-      {/* Email Input */}
+      {/* Identifier Input */}
       <View className="w-full mb-4">
-        <View className={`w-full bg-black/20 rounded-2xl py-2 ${errors.email ? 'border border-red-500' : ''}`}>
+        <View className={`w-full bg-black/20 rounded-2xl py-2 ${errors.identifier ? 'border border-red-500' : ''}`}>
           <Controller
             control={control}
-            name="email"
+            name="identifier"
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
                 value={value}
                 onChangeText={onChange}
                 onBlur={onBlur}
-                placeholder="E-MAIL"
+                placeholder="E-MAIL OR USERNAME"
                 placeholderTextColor="#A0A0A0"
                 className="text-white text-center text-lg font-jost"
-                keyboardType="email-address"
+                keyboardType="default"
                 autoCapitalize="none"
               />
             )}
           />
         </View>
-        {errors.email && (
+        {errors.identifier && (
           <Text className="text-red-500 text-sm mt-1 ml-2 font-jost">
-            {errors.email.message}
+            {errors.identifier.message}
           </Text>
         )}
       </View>

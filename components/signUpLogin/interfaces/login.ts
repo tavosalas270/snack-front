@@ -1,14 +1,15 @@
 import { z } from 'zod';
 
 export const loginSchema = z.object({
-  email: z.email('Invalid e-mail format'),
+  identifier: z.string().min(1, 'E-mail or Username is required'),
   password: z.string().min(1, 'Password is required'),
 });
 
 export type LoginFormValues = z.infer<typeof loginSchema>;
 
 export interface LoginParams {
-  email: string;
+  email?: string;
+  username?: string;
   password: string;
 }
 

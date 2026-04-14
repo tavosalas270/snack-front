@@ -7,7 +7,7 @@ import { login } from '../services';
 export const useLogin = () => {
   const { setAccessToken, setRefreshToken } = useLoginContext();
   return useMutation<LoginResponse, BadLoginResponse, LoginParams>({
-    mutationFn: ({ email, password }) => login({ email, password }),
+    mutationFn: ({ email, username, password }) => login({ email, username, password }),
     onSuccess: (data) => {
       setAccessToken(data.token.access);
       setRefreshToken(data.token.refresh);
