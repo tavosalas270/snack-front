@@ -1,4 +1,5 @@
 import { WatchTab } from '@/components/home/components/tabs/watch';
+import { Image } from 'expo-image';
 import React, { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -20,8 +21,16 @@ export default function HomeScreen() {
     const [activeTab, setActiveTab] = useState<Tab>('WATCH');
 
     return (
-        <SafeAreaView style={styles.container}>
-            {/* Tab bar */}
+        <View style={styles.container}>
+            {/* Background */}
+            <Image
+                source={require('@/assets/images/FondoUno.png')}
+                style={StyleSheet.absoluteFillObject}
+                contentFit="cover"
+            />
+
+            <SafeAreaView style={styles.safeArea}>
+                {/* Tab bar */}
             <View style={styles.tabBar}>
                 <ScrollView
                     horizontal
@@ -49,14 +58,18 @@ export default function HomeScreen() {
             <View style={styles.content}>
                 {renderContent(activeTab)}
             </View>
-        </SafeAreaView>
+            </SafeAreaView>
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#0D0D0D',
+        backgroundColor: '#0D0D0D', // Fallback color
+    },
+    safeArea: {
+        flex: 1,
     },
     tabBar: {
         paddingVertical: 12,
@@ -91,6 +104,5 @@ const styles = StyleSheet.create({
     },
     empty: {
         flex: 1,
-        backgroundColor: '#0D0D0D',
     },
 });

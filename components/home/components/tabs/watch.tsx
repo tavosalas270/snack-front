@@ -2,14 +2,7 @@ import { useSeries } from '@/components/home/hooks';
 import { Series } from '@/components/home/interfaces';
 import { Image } from 'expo-image';
 import React, { useCallback } from 'react';
-import {
-    ActivityIndicator,
-    FlatList,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View,
-} from 'react-native';
+import { ActivityIndicator, FlatList, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 const BASE_URL = process.env.EXPO_PUBLIC_SERVER_URL ?? '';
 
@@ -39,7 +32,7 @@ const SeriesCard = ({ item }: { item: Series }) => (
             <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.thumbnailRow}
+                contentContainerClassName="px-4 pt-2.5 gap-2"
             >
                 {item.videos?.map((video) => (
                     <VideoThumbnail key={video?.id} uri={video?.thumbnail_path ?? ''} />
@@ -95,7 +88,6 @@ export const WatchTab = () => {
 const styles = StyleSheet.create({
     list: {
         paddingVertical: 16,
-        backgroundColor: '#0D0D0D',
     },
     card: {
         marginBottom: 28,
@@ -148,6 +140,5 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#0D0D0D',
     },
 });
