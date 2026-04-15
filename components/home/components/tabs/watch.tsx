@@ -15,16 +15,25 @@ const VideoThumbnail = ({ uri }: { uri: string }) => (
 );
 
 const SeriesCard = ({ item }: { item: Series }) => (
-    <View style={styles.card}>
+    <View className='mb-7'>
         {/* Poster */}
-        <View style={styles.posterContainer}>
+        <View className="mx-4 rounded-2xl overflow-hidden aspect-video bg-black">
             <Image
                 source={{ uri: `${BASE_URL}/media/${item.poster}` }}
                 style={styles.poster}
                 contentFit="contain"
             />
-            <View style={styles.posterOverlay} />
-            <Text style={styles.seriesTitle}>{item.title}</Text>
+            <View className="absolute inset-0 bg-gradient-to-b from-transparent from-40% to-black/85" />
+            <Text
+                className="absolute bottom-3.5 inset-x-3.5 text-white text-lg font-bold tracking-[0.5px]"
+                style={{
+                    textShadowColor: 'rgba(0,0,0,0.8)',
+                    textShadowOffset: { width: 0, height: 1 },
+                    textShadowRadius: 4,
+                }}
+            >
+                {item.title}
+            </Text>
         </View>
 
         {/* Video thumbnails row */}
@@ -57,7 +66,7 @@ export const WatchTab = () => {
     const renderFooter = () => {
         if (!isFetchingNextPage) return null;
         return (
-            <View style={styles.loader}>
+            <View className='py-5 items-center'>
                 <ActivityIndicator size="small" color="#D63AF9" />
             </View>
         );
@@ -65,7 +74,7 @@ export const WatchTab = () => {
 
     if (isLoading) {
         return (
-            <View style={styles.centered}>
+            <View className='flex-1 items-center justify-center'>
                 <ActivityIndicator size="large" color="#D63AF9" />
             </View>
         );
@@ -87,58 +96,16 @@ export const WatchTab = () => {
 
 const styles = StyleSheet.create({
     list: {
-        paddingVertical: 16,
-    },
-    card: {
-        marginBottom: 28,
-    },
-    posterContainer: {
-        marginHorizontal: 16,
-        borderRadius: 16,
-        overflow: 'hidden',
-        aspectRatio: 16 / 9,
-        backgroundColor: '#000',
+        paddingVertical: 16
     },
     poster: {
         width: '100%',
-        height: '100%',
-    },
-    posterOverlay: {
-        ...StyleSheet.absoluteFillObject,
-        background: 'transparent',
-        backgroundImage: 'linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.85) 100%)',
-    },
-    seriesTitle: {
-        position: 'absolute',
-        bottom: 14,
-        left: 14,
-        right: 14,
-        color: '#FFFFFF',
-        fontSize: 18,
-        fontWeight: '700',
-        letterSpacing: 0.5,
-        textShadowColor: 'rgba(0,0,0,0.8)',
-        textShadowOffset: { width: 0, height: 1 },
-        textShadowRadius: 4,
-    },
-    thumbnailRow: {
-        paddingHorizontal: 16,
-        paddingTop: 10,
-        gap: 8,
+        height: '100%'
     },
     thumbnail: {
         width: 110,
         height: 65,
         borderRadius: 8,
-        backgroundColor: '#1A1A1A',
-    },
-    loader: {
-        paddingVertical: 20,
-        alignItems: 'center',
-    },
-    centered: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
+        backgroundColor: '#1A1A1A'
+    }
 });
