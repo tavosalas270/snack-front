@@ -1,20 +1,23 @@
+import { PlayVideo } from '@/components/home/components/tabs/play';
 import { useSeries } from '@/components/home/hooks';
 import { Series } from '@/components/home/interfaces';
 import { Image } from 'expo-image';
-import React, { useCallback } from 'react';
-import { ActivityIndicator, FlatList, ScrollView, StyleSheet, Text, View } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { ActivityIndicator, FlatList, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 const BASE_URL = process.env.EXPO_PUBLIC_SERVER_URL ?? '';
 
-const VideoThumbnail = ({ uri }: { uri: string }) => (
-    <Image
-        source={{ uri: `${BASE_URL}/media/${uri}` }}
-        style={styles.thumbnail}
-        contentFit="cover"
-    />
+const VideoThumbnail = ({ uri, onPress }: { uri: string; onPress: () => void }) => (
+    <Pressable onPress={onPress}>
+        <Image
+            source={{ uri: `${BASE_URL}/media/${uri}` }}
+            style={styles.thumbnail}
+            contentFit="cover"
+        />
+    </Pressable>
 );
 
-const SeriesCard = ({ item }: { item: Series }) => (
+const SeriesCard = ({ item, onVideoSelect }: { item: Series; onVideoSelect: (path: string) => void }) => (
     <View className='mb-7'>
         {/* Poster */}
         <View className="mx-4 rounded-2xl overflow-hidden aspect-video bg-black">
@@ -44,7 +47,11 @@ const SeriesCard = ({ item }: { item: Series }) => (
                 contentContainerClassName="px-4 pt-2.5 gap-2"
             >
                 {item.videos?.map((video) => (
-                    <VideoThumbnail key={video?.id} uri={video?.thumbnail_path ?? ''} />
+                    <VideoThumbnail
+                        key={video?.id}
+                        uri={video?.thumbnail_path ?? ''}
+                        onPress={() => onVideoSelect(video?.video_path ?? '')}
+                    />
                 ))}
             </ScrollView>
         )}
@@ -53,6 +60,7 @@ const SeriesCard = ({ item }: { item: Series }) => (
 
 export const WatchTab = () => {
     const { data, isFetchingNextPage, hasNextPage, fetchNextPage, isLoading } = useSeries();
+    const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
 
     // Aplanar páginas y filtrar items undefined/null de forma segura
     const series: Series[] = data?.pages.flat().filter((item): item is Series => item != null) ?? [];
@@ -81,16 +89,24 @@ export const WatchTab = () => {
     }
 
     return (
-        <FlatList
-            data={series}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => <SeriesCard item={item} />}
-            onEndReached={onEndReached}
-            onEndReachedThreshold={0.5}
-            ListFooterComponent={renderFooter}
-            contentContainerStyle={styles.list}
-            showsVerticalScrollIndicator={false}
-        />
+        <View className="flex-1">
+            <FlatList
+                data={series}
+                keyExtractor={(item) => item.id.toString()}
+                renderItem={({ item }) => <SeriesCard item={item} onVideoSelect={setSelectedVideo} />}
+                onEndReached={onEndReached}
+                onEndReachedThreshold={0.5}
+                ListFooterComponent={renderFooter}
+                contentContainerStyle={styles.list}
+                showsVerticalScrollIndicator={false}
+            />
+            {selectedVideo && (
+                <PlayVideo
+                    videoPath={selectedVideo}
+                    onClose={() => setSelectedVideo(null)}
+                />
+            )}
+        </View>
     );
 };
 
