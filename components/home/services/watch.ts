@@ -14,6 +14,6 @@ export const getSeries = async (page: number = 1): Promise<Series[]> => {
     }
 
     const data = await response.json();
-
-    return data.results;
+    console.log("Hola: ", data)
+    return data;
 };

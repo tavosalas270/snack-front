@@ -13,6 +13,7 @@ export interface Series {
     id: number;
     title: string;
     category: number;
+    poster: string;
     videos: Videos[];
 }
 

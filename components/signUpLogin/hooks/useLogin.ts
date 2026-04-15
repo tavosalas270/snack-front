@@ -11,7 +11,7 @@ export const useLogin = () => {
     onSuccess: (data) => {
       setAccessToken(data.token.access);
       setRefreshToken(data.token.refresh);
-      router.push('/watch');
+      router.push('/home');
     },
     onError: (error) => {
       console.error('Error in login:', error);

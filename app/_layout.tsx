@@ -1,4 +1,4 @@
-import { useLoginContext, LoginProvider } from '@/components/signUpLogin/context';
+import { LoginProvider, useLoginContext } from '@/components/signUpLogin/context';
 import { CherryBombOne_400Regular, useFonts } from '@expo-google-fonts/cherry-bomb-one';
 import { Jost_400Regular, Jost_700Bold } from '@expo-google-fonts/jost';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
@@ -26,7 +26,7 @@ function InitialLayout() {
   const router = useRouter();
 
   useEffect(() => {
-    const inWatchGroup = segments.length > 0 && segments[0] === 'watch';
+    const inWatchGroup = segments.length > 0 && segments[0] === 'home';
 
     if (!accessToken && inWatchGroup) {
       router.replace('/signUpLogin');
@@ -36,7 +36,7 @@ function InitialLayout() {
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="signUpLogin/index" />
-      <Stack.Screen name="watch/index" />
+      <Stack.Screen name="home/index" />
     </Stack>
   );
 }
