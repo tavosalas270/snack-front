@@ -9,11 +9,15 @@ const BASE_URL = process.env.EXPO_PUBLIC_SERVER_URL ?? '';
 
 const VideoThumbnail = ({ uri, onPress }: { uri: string; onPress: () => void }) => (
     <Pressable onPress={onPress}>
-        <Image
-            source={{ uri: `${BASE_URL}/media/${uri}` }}
-            style={styles.thumbnail}
-            contentFit="cover"
-        />
+        {uri ? (
+            <Image
+                source={{ uri: `${BASE_URL}/media/${uri}` }}
+                style={styles.thumbnail}
+                contentFit="cover"
+            />
+        ) : (
+            <View style={styles.thumbnail} />
+        )}
     </Pressable>
 );
 
@@ -48,11 +52,15 @@ const SeriesCard = ({ item, onVideoSelect }: { item: Series; onVideoSelect: (pat
         <View className='mb-7'>
             {/* Poster */}
             <View className="mx-4 rounded-2xl overflow-hidden aspect-video bg-black">
-                <Image
-                    source={{ uri: `${BASE_URL}/media/${item.poster}` }}
-                    style={styles.poster}
-                    contentFit="contain"
-                />
+                {item.poster ? (
+                    <Image
+                        source={{ uri: `${BASE_URL}/media/${item.poster}` }}
+                        style={styles.poster}
+                        contentFit="contain"
+                    />
+                ) : (
+                    <View style={styles.poster} />
+                )}
                 <View className="absolute inset-0 bg-gradient-to-b from-transparent from-40% to-black/85" />
                 <Text
                     className="absolute bottom-3.5 inset-x-3.5 text-white text-lg font-bold tracking-[0.5px]"
