@@ -1,5 +1,5 @@
 import { PlayVideo } from '@/components/home/components/tabs/play';
-import { useSeries } from '@/components/home/hooks';
+import { useSeries, useVideos } from '@/components/home/hooks';
 import { Series } from '@/components/home/interfaces';
 import { Image } from 'expo-image';
 import React, { useCallback, useState } from 'react';
@@ -17,46 +17,77 @@ const VideoThumbnail = ({ uri, onPress }: { uri: string; onPress: () => void }) 
     </Pressable>
 );
 
-const SeriesCard = ({ item, onVideoSelect }: { item: Series; onVideoSelect: (path: string) => void }) => (
-    <View className='mb-7'>
-        {/* Poster */}
-        <View className="mx-4 rounded-2xl overflow-hidden aspect-video bg-black">
-            <Image
-                source={{ uri: `${BASE_URL}/media/${item.poster}` }}
-                style={styles.poster}
-                contentFit="contain"
-            />
-            <View className="absolute inset-0 bg-gradient-to-b from-transparent from-40% to-black/85" />
-            <Text
-                className="absolute bottom-3.5 inset-x-3.5 text-white text-lg font-bold tracking-[0.5px]"
-                style={{
-                    textShadowColor: 'rgba(0,0,0,0.8)',
-                    textShadowOffset: { width: 0, height: 1 },
-                    textShadowRadius: 4,
-                }}
-            >
-                {item.title}
-            </Text>
-        </View>
+const SeriesCard = ({ item, onVideoSelect }: { item: Series; onVideoSelect: (path: string) => void }) => {
+    const [loadMore, setLoadMore] = useState(false);
+    const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useVideos(item.id, 2, loadMore);
 
-        {/* Video thumbnails row */}
-        {(item.videos?.length ?? 0) > 0 && (
-            <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerClassName="px-4 pt-2.5 gap-2"
-            >
-                {item.videos?.map((video) => (
-                    <VideoThumbnail
-                        key={video?.id}
-                        uri={video?.thumbnail_path ?? ''}
-                        onPress={() => onVideoSelect(video?.video_path ?? '')}
-                    />
-                ))}
-            </ScrollView>
-        )}
-    </View>
-);
+    const extraVideos = data?.pages.flat() ?? [];
+    const allVideos = [...(item.videos ?? []), ...extraVideos];
+
+    const onEndReached = useCallback(() => {
+        if (!loadMore) {
+            // Solo empezamos a cargar más si la primera página ya tiene al menos 5 elementos
+            if ((item.videos?.length ?? 0) >= 5) {
+                setLoadMore(true);
+            }
+        } else if (hasNextPage && !isFetchingNextPage) {
+            fetchNextPage();
+        }
+    }, [loadMore, hasNextPage, isFetchingNextPage, fetchNextPage, item.videos]);
+
+    const renderFooter = () => {
+        if (!isFetchingNextPage) return null;
+        return (
+            <View className='pl-2 justify-center'>
+                <ActivityIndicator size="small" color="#D63AF9" />
+            </View>
+        );
+    };
+
+    return (
+        <View className='mb-7'>
+            {/* Poster */}
+            <View className="mx-4 rounded-2xl overflow-hidden aspect-video bg-black">
+                <Image
+                    source={{ uri: `${BASE_URL}/media/${item.poster}` }}
+                    style={styles.poster}
+                    contentFit="contain"
+                />
+                <View className="absolute inset-0 bg-gradient-to-b from-transparent from-40% to-black/85" />
+                <Text
+                    className="absolute bottom-3.5 inset-x-3.5 text-white text-lg font-bold tracking-[0.5px]"
+                    style={{
+                        textShadowColor: 'rgba(0,0,0,0.8)',
+                        textShadowOffset: { width: 0, height: 1 },
+                        textShadowRadius: 4,
+                    }}
+                >
+                    {item.title}
+                </Text>
+            </View>
+
+            {/* Video thumbnails row */}
+            {allVideos.length > 0 && (
+                <FlatList
+                    horizontal
+                    data={allVideos}
+                    keyExtractor={(video) => video.id.toString()}
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 10, gap: 8 }}
+                    renderItem={({ item: video }) => (
+                        <VideoThumbnail
+                            uri={video?.thumbnail_path ?? ''}
+                            onPress={() => onVideoSelect(video?.video_path ?? '')}
+                        />
+                    )}
+                    onEndReached={onEndReached}
+                    onEndReachedThreshold={0.5}
+                    ListFooterComponent={renderFooter}
+                />
+            )}
+        </View>
+    );
+};
 
 export const WatchTab = () => {
     const { data, isFetchingNextPage, hasNextPage, fetchNextPage, isLoading } = useSeries();
