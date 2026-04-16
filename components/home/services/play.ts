@@ -1,0 +1,18 @@
+import { Videos } from "../interfaces";
+
+export const getVideos = async (page: number = 1): Promise<Videos[]> => {
+    const baseUrl = process.env.EXPO_PUBLIC_SERVER_URL;
+    const response = await fetch(`${baseUrl}/api/videos/?page=${page}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+
+    if (!response.ok) {
+        throw { status: response.status };
+    }
+
+    const data = await response.json();
+    return data;
+};
