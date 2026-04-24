@@ -15,7 +15,7 @@ Este repositorio contiene el código fuente del frontend móvil para **Snack**, 
 
 ## 🏗️ Arquitectura
 
-El proyecto sigue una **Arquitectura basada en Características (Feature-based Architecture)**. En lugar de organizar el código solo por tipos de archivos (hooks, componentes, etc.), lo organizamos por módulos funcionales. 
+El proyecto sigue una **Arquitectura basada en Feature (Feature-based Architecture)**. En lugar de organizar el código solo por tipos de archivos (hooks, componentes, etc.), lo organizamos por módulos funcionales. 
 
 Cada módulo dentro de la carpeta `components/` encapsula su propia lógica:
 *   **`components/`**: UI específica del módulo.
