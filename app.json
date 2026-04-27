@@ -7,7 +7,6 @@
     "icon": "./assets/images/icon.png",
     "scheme": "snackfront",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "ios": {
       "supportsTablet": true
     },
