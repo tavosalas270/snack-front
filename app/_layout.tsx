@@ -17,7 +17,7 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 SplashScreen.preventAutoHideAsync();
 
 export const unstable_settings = {
-  anchor: 'signUpLogin',
+  initialRouteName: 'signUpLogin',
 };
 
 function InitialLayout() {
