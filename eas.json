@@ -14,7 +14,7 @@
         "buildType": "apk"
       },
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://0a0e-186-118-43-121.ngrok-free.app/",
+        "EXPO_PUBLIC_SERVER_URL": "https://0a0e-186-118-43-121.ngrok-free.app/",
         "EXPO_PUBLIC_APP_ENV": "preview"
       }
     },
