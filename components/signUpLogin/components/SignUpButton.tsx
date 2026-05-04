@@ -8,14 +8,14 @@ export default function SignUpButton({ title, variant = 'primary', selected, ...
       <TouchableOpacity
         activeOpacity={0.8}
         {...props}
-        className={`w-full shadow-lg overflow-hidden ${props.disabled ? 'opacity-50' : 'opacity-100'}`}
+        className={`w-full h-16 shadow-lg overflow-hidden ${props.disabled ? 'opacity-50' : 'opacity-100'}`}
+        style={{ borderRadius: 9999 }}
       >
         <LinearGradient
           colors={['#0076FF', '#00E4E4']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
-          className="w-full py-6 items-center justify-center"
-          style={{ borderRadius: 9999 }}
+          style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
         >
           <Text className="text-white text-xl font-jost-bold uppercase tracking-wider">
             {title}

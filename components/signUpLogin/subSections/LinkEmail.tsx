@@ -53,7 +53,7 @@ export default function LinkEmail({ onContinue }: LinkEmailProps) {
       <View className="flex flex-col w-full mb-6">
         {/* Email Input */}
         <View className="w-full mb-4">
-          <View className={`w-full bg-black/20 rounded-2xl py-2 ${errors.email ? 'border border-red-500' : ''}`}>
+          <View className={`w-full h-16 bg-black/20 rounded-2xl justify-center ${errors.email ? 'border border-red-500' : ''}`}>
             <Controller
               control={control}
               name="email"
@@ -64,7 +64,7 @@ export default function LinkEmail({ onContinue }: LinkEmailProps) {
                   onBlur={onBlur}
                   placeholder="E-MAIL"
                   placeholderTextColor="#A0A0A0"
-                  className="text-white text-center text-lg font-jost"
+                  className="flex-1 text-white text-center text-lg font-jost"
                   keyboardType="email-address"
                   autoCapitalize="none"
                 />

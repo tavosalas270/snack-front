@@ -38,7 +38,7 @@ export default function Login() {
 
       {/* Identifier Input */}
       <View className="w-full mb-4">
-        <View className={`w-full bg-black/20 rounded-2xl py-2 ${errors.identifier ? 'border border-red-500' : ''}`}>
+        <View className={`w-full h-16 bg-black/20 rounded-2xl justify-center ${errors.identifier ? 'border border-red-500' : ''}`}>
           <Controller
             control={control}
             name="identifier"
@@ -49,7 +49,7 @@ export default function Login() {
                 onBlur={onBlur}
                 placeholder="E-MAIL OR USERNAME"
                 placeholderTextColor="#A0A0A0"
-                className="text-white text-center text-lg font-jost"
+                className="flex-1 text-white text-center text-lg font-jost"
                 keyboardType="default"
                 autoCapitalize="none"
               />
@@ -65,7 +65,7 @@ export default function Login() {
 
       {/* Password Input */}
       <View className="w-full mb-8">
-        <View className={`w-full bg-black/20 rounded-2xl py-2 ${errors.password ? 'border border-red-500' : ''}`}>
+        <View className={`w-full h-16 bg-black/20 rounded-2xl justify-center ${errors.password ? 'border border-red-500' : ''}`}>
           <Controller
             control={control}
             name="password"
@@ -76,7 +76,7 @@ export default function Login() {
                 onBlur={onBlur}
                 placeholder="PASSWORD"
                 placeholderTextColor="#A0A0A0"
-                className="text-white text-center text-lg font-jost"
+                className="flex-1 text-white text-center text-lg font-jost"
                 secureTextEntry
               />
             )}
