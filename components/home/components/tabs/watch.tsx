@@ -1,5 +1,5 @@
 import { PlayVideo } from '@/components/home/components/tabs/play';
-import { useAddFavorite, useSeries, useVideos } from '@/components/home/hooks';
+import { useAddFavorite, useSeries, useVideos, useSearchVideos } from '@/components/home/hooks';
 import { Series, Videos } from '@/components/home/interfaces';
 import { AntDesign } from '@expo/vector-icons';
 import { InfiniteData, useQueryClient } from '@tanstack/react-query';
@@ -114,7 +114,10 @@ export const WatchTab = () => {
 
     const queryClient = useQueryClient();
     const [searchQuery, setSearchQuery] = useState('');
+    const [submittedQuery, setSubmittedQuery] = useState('');
     const [isSearching, setIsSearching] = useState(false);
+    
+    const { data: searchApiVideos, isFetching: isSearchFetching } = useSearchVideos(submittedQuery);
 
     // Aplanar páginas y filtrar items undefined/null de forma segura
     const series: Series[] = data?.pages.flat().filter((item): item is Series => item != null) ?? [];
@@ -144,13 +147,18 @@ export const WatchTab = () => {
             }
         });
 
+        if (searchApiVideos) {
+            allVideos.push(...searchApiVideos);
+        }
+
         const uniqueVideos = Array.from(new Map(allVideos.map(v => [v.id, v])).values());
         return uniqueVideos.filter(v => v.title?.toLowerCase().includes(searchQuery.toLowerCase()));
-    }, [searchQuery, queryClient]);
+    }, [searchQuery, queryClient, searchApiVideos]);
 
     const handleSearchCancel = () => {
         setIsSearching(false);
         setSearchQuery('');
+        setSubmittedQuery('');
     };
 
     const handleInputChange = (value: string) => {
@@ -231,7 +239,7 @@ export const WatchTab = () => {
                         onChangeText={(value) => handleInputChange(value)}
                         onFocus={() => setIsSearching(true)}
                     />
-                    <Pressable onPress={() => console.log("buscando...")} style={styles.searchIcon}>
+                    <Pressable onPress={() => setSubmittedQuery(searchQuery)} style={styles.searchIcon}>
                         <AntDesign name="search" size={20} color="white" />
                     </Pressable>
                 </View>

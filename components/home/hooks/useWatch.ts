@@ -1,7 +1,7 @@
-import { useInfiniteQuery, useMutation, useQueryClient, InfiniteData } from '@tanstack/react-query';
-import { Favorites, Series } from '../interfaces';
-import { addFavorite, getFavorites, getSeries } from '../services';
 import { useLoginContext } from '@/components/signUpLogin/context';
+import { InfiniteData, useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Favorites, Series, Videos } from '../interfaces';
+import { addFavorite, getFavorites, getSeries, searchVideos } from '../services';
 
 export const useSeries = () => {
     const { accessToken } = useLoginContext();
@@ -20,6 +20,22 @@ export const useSeries = () => {
             if (!lastPage || lastPage.length === 0) return undefined;
             return lastPageParam + 1;
         },
+    });
+
+    return query;
+};
+
+export const useSearchVideos = (value: string) => {
+    const query = useQuery({
+        queryKey: ['searchVideos', value],
+        queryFn: async (): Promise<Videos[]> => {
+            try {
+                return await searchVideos(value);
+            } catch {
+                return [];
+            }
+        },
+        enabled: value.length > 0,
     });
 
     return query;
