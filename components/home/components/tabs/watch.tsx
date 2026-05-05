@@ -1,10 +1,11 @@
 import { PlayVideo } from '@/components/home/components/tabs/play';
 import { useAddFavorite, useSeries, useVideos } from '@/components/home/hooks';
-import { Series } from '@/components/home/interfaces';
+import { Series, Videos } from '@/components/home/interfaces';
 import { AntDesign } from '@expo/vector-icons';
+import { InfiniteData, useQueryClient } from '@tanstack/react-query';
 import { Image } from 'expo-image';
-import React, { useCallback, useState } from 'react';
-import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import React, { useCallback, useMemo, useState } from 'react';
+import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 const BASE_URL = process.env.EXPO_PUBLIC_SERVER_URL ?? '';
 
@@ -111,8 +112,51 @@ export const WatchTab = () => {
     const { data, isFetchingNextPage, hasNextPage, fetchNextPage, isLoading } = useSeries();
     const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
 
+    const queryClient = useQueryClient();
+    const [searchQuery, setSearchQuery] = useState('');
+    const [isSearching, setIsSearching] = useState(false);
+
     // Aplanar páginas y filtrar items undefined/null de forma segura
     const series: Series[] = data?.pages.flat().filter((item): item is Series => item != null) ?? [];
+
+    const filteredVideos = useMemo(() => {
+        if (!searchQuery) return [];
+
+        const seriesData = queryClient.getQueriesData<InfiniteData<Series[]>>({ queryKey: ['series'] });
+        let allVideos: Videos[] = [];
+
+        seriesData.forEach(([key, data]) => {
+            if (data && data.pages) {
+                data.pages.flat().forEach(serie => {
+                    if (serie && serie.videos) {
+                        allVideos.push(...serie.videos);
+                    }
+                });
+            }
+        });
+
+        const videosData = queryClient.getQueriesData<InfiniteData<Videos[]>>({ queryKey: ['videos'] });
+        videosData.forEach(([key, data]) => {
+            if (data && data.pages) {
+                data.pages.flat().forEach(video => {
+                    if (video) allVideos.push(video);
+                });
+            }
+        });
+
+        const uniqueVideos = Array.from(new Map(allVideos.map(v => [v.id, v])).values());
+        return uniqueVideos.filter(v => v.title?.toLowerCase().includes(searchQuery.toLowerCase()));
+    }, [searchQuery, queryClient]);
+
+    const handleSearchCancel = () => {
+        setIsSearching(false);
+        setSearchQuery('');
+    };
+
+    const handleInputChange = (value: string) => {
+        setIsSearching(true);
+        setSearchQuery(value);
+    }
 
     const onEndReached = useCallback(() => {
         if (hasNextPage && !isFetchingNextPage) {
@@ -137,18 +181,88 @@ export const WatchTab = () => {
         );
     }
 
+    const renderSearchItem = ({ item: video }: { item: Videos }) => {
+        const thumbnailPath = video?.thumbnail_path || video?.thumbnail;
+        const videoPath = video?.video_path || video?.video_file;
+
+        return (
+            <Pressable
+                className="mb-6 px-4"
+                onPress={() => videoPath ? setSelectedVideo(videoPath) : null}
+            >
+                <View className="rounded-2xl overflow-hidden aspect-video bg-black relative">
+                    {thumbnailPath ? (
+                        <Image
+                            source={{ uri: `${BASE_URL}/media/${thumbnailPath}` }}
+                            style={styles.poster}
+                            contentFit="cover"
+                        />
+                    ) : (
+                        <View style={styles.poster} />
+                    )}
+                    <View className="absolute inset-0 bg-gradient-to-b from-transparent from-40% to-black/85" />
+                    <View className="absolute bottom-3.5 inset-x-3.5">
+                        <Text
+                            className="text-white text-lg font-bold tracking-[0.5px]"
+                            style={{
+                                textShadowColor: 'rgba(0,0,0,0.8)',
+                                textShadowOffset: { width: 0, height: 1 },
+                                textShadowRadius: 4,
+                            }}
+                            numberOfLines={1}
+                        >
+                            {video?.title || 'Sin título'}
+                        </Text>
+                    </View>
+                </View>
+            </Pressable>
+        );
+    };
+
     return (
         <View className="flex-1">
-            <FlatList
-                data={series}
-                keyExtractor={(item) => item.id.toString()}
-                renderItem={({ item }) => <SeriesCard item={item} onVideoSelect={setSelectedVideo} />}
-                onEndReached={onEndReached}
-                onEndReachedThreshold={0.5}
-                ListFooterComponent={renderFooter}
-                contentContainerStyle={styles.list}
-                showsVerticalScrollIndicator={false}
-            />
+            <View className="flex-row items-center px-4 pt-2 pb-4">
+                <View style={styles.searchContainer}>
+                    <TextInput
+                        placeholder="Buscar..."
+                        placeholderTextColor="rgba(255,255,255,0.5)"
+                        style={styles.searchInput}
+                        value={searchQuery}
+                        onChangeText={(value) => handleInputChange(value)}
+                        onFocus={() => setIsSearching(true)}
+                    />
+                    <Pressable onPress={() => console.log("buscando...")} style={styles.searchIcon}>
+                        <AntDesign name="search" size={20} color="white" />
+                    </Pressable>
+                </View>
+                {isSearching && (
+                    <Pressable onPress={handleSearchCancel} className="ml-3">
+                        <Text className="text-white">Cancelar</Text>
+                    </Pressable>
+                )}
+            </View>
+
+            {isSearching ? (
+                <FlatList
+                    data={filteredVideos}
+                    keyExtractor={(item) => item.id.toString()}
+                    renderItem={renderSearchItem}
+                    contentContainerStyle={styles.list}
+                    showsVerticalScrollIndicator={false}
+                    keyboardShouldPersistTaps="handled"
+                />
+            ) : (
+                <FlatList
+                    data={series}
+                    keyExtractor={(item) => item.id.toString()}
+                    renderItem={({ item }) => <SeriesCard item={item} onVideoSelect={setSelectedVideo} />}
+                    onEndReached={onEndReached}
+                    onEndReachedThreshold={0.5}
+                    ListFooterComponent={renderFooter}
+                    contentContainerStyle={styles.list}
+                    showsVerticalScrollIndicator={false}
+                />
+            )}
             {selectedVideo && (
                 <PlayVideo
                     videoPath={selectedVideo}
@@ -180,5 +294,22 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0,0,0,0.5)',
         padding: 4,
         borderRadius: 12,
+    },
+    searchContainer: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#1A1A1A',
+        borderRadius: 8,
+        paddingHorizontal: 12,
+        height: 40,
+    },
+    searchInput: {
+        flex: 1,
+        color: 'white',
+        fontSize: 14,
+    },
+    searchIcon: {
+        marginLeft: 8,
     }
 });
