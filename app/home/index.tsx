@@ -1,17 +1,20 @@
 import { WatchTab } from '@/components/home/components/tabs/watch';
+import { FavoritesTab } from '@/components/home/components/tabs/favorites';
 import { Image } from 'expo-image';
 import React, { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-type Tab = 'WATCH' | 'PLAY' | 'TRADE' | 'HANG';
+type Tab = 'WATCH' | 'FAVORITES' | 'PLAY' | 'TRADE' | 'HANG';
 
-const TABS: Tab[] = ['WATCH', 'PLAY', 'TRADE', 'HANG'];
+const TABS: Tab[] = ['WATCH', 'FAVORITES', 'PLAY', 'TRADE', 'HANG'];
 
 const renderContent = (tab: Tab) => {
     switch (tab) {
         case 'WATCH':
             return <WatchTab />;
+        case 'FAVORITES':
+            return <FavoritesTab />;
         default:
             return <View style={styles.empty} />;
     }
@@ -31,33 +34,33 @@ export default function HomeScreen() {
 
             <SafeAreaView style={styles.safeArea}>
                 {/* Tab bar */}
-            <View style={styles.tabBar}>
-                <ScrollView
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={styles.tabBarInner}
-                >
-                    {TABS.map((tab) => {
-                        const isActive = tab === activeTab;
-                        return (
-                            <Pressable
-                                key={tab}
-                                onPress={() => setActiveTab(tab)}
-                                style={[styles.tab, isActive && styles.tabActive]}
-                            >
-                                <Text style={[styles.tabLabel, isActive && styles.tabLabelActive]}>
-                                    {tab}
-                                </Text>
-                            </Pressable>
-                        );
-                    })}
-                </ScrollView>
-            </View>
+                <View style={styles.tabBar}>
+                    <ScrollView
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={styles.tabBarInner}
+                    >
+                        {TABS.map((tab) => {
+                            const isActive = tab === activeTab;
+                            return (
+                                <Pressable
+                                    key={tab}
+                                    onPress={() => setActiveTab(tab)}
+                                    style={[styles.tab, isActive && styles.tabActive]}
+                                >
+                                    <Text style={[styles.tabLabel, isActive && styles.tabLabelActive]}>
+                                        {tab}
+                                    </Text>
+                                </Pressable>
+                            );
+                        })}
+                    </ScrollView>
+                </View>
 
-            {/* Content */}
-            <View style={styles.content}>
-                {renderContent(activeTab)}
-            </View>
+                {/* Content */}
+                <View style={styles.content}>
+                    {renderContent(activeTab)}
+                </View>
             </SafeAreaView>
         </View>
     );

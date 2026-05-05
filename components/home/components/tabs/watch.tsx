@@ -1,14 +1,15 @@
 import { PlayVideo } from '@/components/home/components/tabs/play';
-import { useSeries, useVideos } from '@/components/home/hooks';
+import { useAddFavorite, useSeries, useVideos } from '@/components/home/hooks';
 import { Series } from '@/components/home/interfaces';
+import { AntDesign } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import React, { useCallback, useState } from 'react';
-import { ActivityIndicator, FlatList, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 
 const BASE_URL = process.env.EXPO_PUBLIC_SERVER_URL ?? '';
 
-const VideoThumbnail = ({ uri, onPress }: { uri: string; onPress: () => void }) => (
-    <Pressable onPress={onPress}>
+const VideoThumbnail = ({ uri, onPress, onFavorite }: { uri: string; onPress: () => void; onFavorite: () => void }) => (
+    <Pressable onPress={onPress} style={{ position: 'relative' }}>
         {uri ? (
             <Image
                 source={{ uri: `${BASE_URL}/media/${uri}` }}
@@ -18,12 +19,20 @@ const VideoThumbnail = ({ uri, onPress }: { uri: string; onPress: () => void }) 
         ) : (
             <View style={styles.thumbnail} />
         )}
+        <Pressable
+            onPress={onFavorite}
+            style={styles.favoriteButton}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+            <AntDesign name="star" size={14} color="white" />
+        </Pressable>
     </Pressable>
 );
 
 const SeriesCard = ({ item, onVideoSelect }: { item: Series; onVideoSelect: (path: string) => void }) => {
     const [loadMore, setLoadMore] = useState(false);
     const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useVideos(item.id, 2, loadMore);
+    const { mutate: addFavorite } = useAddFavorite();
 
     const extraVideos = data?.pages.flat() ?? [];
     const allVideos = [...(item.videos ?? []), ...extraVideos];
@@ -86,6 +95,7 @@ const SeriesCard = ({ item, onVideoSelect }: { item: Series; onVideoSelect: (pat
                         <VideoThumbnail
                             uri={video?.thumbnail_path ?? ''}
                             onPress={() => onVideoSelect(video?.video_path ?? '')}
+                            onFavorite={() => addFavorite(video.id.toString())}
                         />
                     )}
                     onEndReached={onEndReached}
@@ -162,5 +172,13 @@ const styles = StyleSheet.create({
         height: 65,
         borderRadius: 8,
         backgroundColor: '#1A1A1A'
+    },
+    favoriteButton: {
+        position: 'absolute',
+        top: 4,
+        right: 4,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        padding: 4,
+        borderRadius: 12,
     }
 });
