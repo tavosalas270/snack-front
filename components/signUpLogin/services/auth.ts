@@ -20,8 +20,13 @@ export const signUp = async ({ username, email, password }: SignUpParams): Promi
 };
 
 export const login = async ({ email, username, password }: LoginParams): Promise<LoginResponse> => {
+    if (username) {
+        console.log(username, password);
+    } else {
+        console.log(email, password);
+    }
     const baseUrl = process.env.EXPO_PUBLIC_SERVER_URL;
-    
+
     const bodyData: Record<string, string> = { password };
     if (email) bodyData.email = email;
     if (username) bodyData.username = username;
