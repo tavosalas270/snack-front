@@ -1,7 +1,7 @@
 import { useLoginContext } from '@/components/signUpLogin/context';
 import { InfiniteData, useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Favorites, Series, Videos } from '../interfaces';
-import { addFavorite, getFavorites, getSeries, searchVideos } from '../services';
+import { Categories, Favorites, Series, Videos } from '../interfaces';
+import { addFavorite, getCategories, getFavorites, getSeries, searchVideos } from '../services';
 
 export const useSeries = () => {
     const { accessToken } = useLoginContext();
@@ -21,21 +21,35 @@ export const useSeries = () => {
             return lastPageParam + 1;
         },
     });
-
     return query;
 };
 
-export const useSearchVideos = (value: string) => {
+export const useCategories = () => {
     const query = useQuery({
-        queryKey: ['searchVideos', value],
-        queryFn: async (): Promise<Videos[]> => {
+        queryKey: ['categories'],
+        queryFn: async (): Promise<Categories[]> => {
             try {
-                return await searchVideos(value);
+                return await getCategories();
             } catch {
                 return [];
             }
         },
-        enabled: value.length > 0,
+    });
+
+    return query;
+};
+
+export const useSearchVideos = (value: string, category?: string) => {
+    const query = useQuery({
+        queryKey: ['searchVideos', value, category],
+        queryFn: async (): Promise<Videos[]> => {
+            try {
+                return await searchVideos(value, category);
+            } catch {
+                return [];
+            }
+        },
+        enabled: value.length > 0 || (category ? category.length > 0 : false),
     });
 
     return query;

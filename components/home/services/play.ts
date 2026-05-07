@@ -17,9 +17,17 @@ export const getVideos = async (page: number = 1, serie: number): Promise<Videos
     return data;
 };
 
-export const searchVideos = async (query: string): Promise<Videos[]> => {
+export const searchVideos = async (query: string, category?: string): Promise<Videos[]> => {
     const baseUrl = process.env.EXPO_PUBLIC_SERVER_URL;
-    const response = await fetch(`${baseUrl}/api/videos/?search=${query}`, {
+    let url = `${baseUrl}/api/videos/?`;
+    if (query) {
+        url += `search=${encodeURIComponent(query)}&`;
+    }
+    if (category) {
+        url += `category=${encodeURIComponent(category)}`;
+    }
+    
+    const response = await fetch(url, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',

@@ -1,11 +1,12 @@
 import { PlayVideo } from '@/components/home/components/tabs/play';
-import { useAddFavorite, useSeries, useVideos, useSearchVideos } from '@/components/home/hooks';
+import { useAddFavorite, useCategories, useSearchVideos, useSeries, useVideos } from '@/components/home/hooks';
 import { Series, Videos } from '@/components/home/interfaces';
 import { AntDesign } from '@expo/vector-icons';
 import { InfiniteData, useQueryClient } from '@tanstack/react-query';
 import { Image } from 'expo-image';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import DropDownPicker from 'react-native-dropdown-picker';
 
 const BASE_URL = process.env.EXPO_PUBLIC_SERVER_URL ?? '';
 
@@ -109,21 +110,34 @@ const SeriesCard = ({ item, onVideoSelect }: { item: Series; onVideoSelect: (pat
 };
 
 export const WatchTab = () => {
+    const { data: categoriesData } = useCategories();
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
+    const [dropdownItems, setDropdownItems] = useState<{ label: string, value: number }[]>([]);
+
+    useEffect(() => {
+        if (categoriesData) {
+            console.log(categoriesData);
+            setDropdownItems(categoriesData.map(c => ({ label: c.name, value: c.id })));
+        }
+    }, [categoriesData]);
+
     const { data, isFetchingNextPage, hasNextPage, fetchNextPage, isLoading } = useSeries();
     const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
 
     const queryClient = useQueryClient();
     const [searchQuery, setSearchQuery] = useState('');
     const [submittedQuery, setSubmittedQuery] = useState('');
+    const [submittedCategoryName, setSubmittedCategoryName] = useState<string | undefined>(undefined);
     const [isSearching, setIsSearching] = useState(false);
-    
-    const { data: searchApiVideos, isFetching: isSearchFetching } = useSearchVideos(submittedQuery);
+
+    const { data: searchApiVideos, isFetching: isSearchFetching } = useSearchVideos(submittedQuery, submittedCategoryName);
 
     // Aplanar páginas y filtrar items undefined/null de forma segura
     const series: Series[] = data?.pages.flat().filter((item): item is Series => item != null) ?? [];
 
     const filteredVideos = useMemo(() => {
-        if (!searchQuery) return [];
+        if (!searchQuery && !selectedCategoryId) return [];
 
         const seriesData = queryClient.getQueriesData<InfiniteData<Series[]>>({ queryKey: ['series'] });
         let allVideos: Videos[] = [];
@@ -152,13 +166,29 @@ export const WatchTab = () => {
         }
 
         const uniqueVideos = Array.from(new Map(allVideos.map(v => [v.id, v])).values());
-        return uniqueVideos.filter(v => v.title?.toLowerCase().includes(searchQuery.toLowerCase()));
-    }, [searchQuery, queryClient, searchApiVideos]);
+        console.log(selectedCategoryId);
+        console.log("uniqueVideos: ", uniqueVideos);
+        const videosToSee = uniqueVideos.filter(v => {
+            const matchesText = searchQuery
+                ? v.title?.toLowerCase().includes(searchQuery.toLowerCase())
+                : true;
+
+            const matchesCategory = selectedCategoryId
+                ? v.category_id === selectedCategoryId
+                : true;
+
+            return matchesText && matchesCategory;
+        });
+        console.log("videosToSee: ", videosToSee);
+        return videosToSee
+    }, [searchQuery, selectedCategoryId, queryClient, searchApiVideos]);
 
     const handleSearchCancel = () => {
         setIsSearching(false);
         setSearchQuery('');
         setSubmittedQuery('');
+        setSelectedCategoryId(null);
+        setSubmittedCategoryName(undefined);
     };
 
     const handleInputChange = (value: string) => {
@@ -229,24 +259,60 @@ export const WatchTab = () => {
 
     return (
         <View className="flex-1">
-            <View className="flex-row items-center px-4 pt-2 pb-4">
-                <View style={styles.searchContainer}>
-                    <TextInput
-                        placeholder="Buscar..."
-                        placeholderTextColor="rgba(255,255,255,0.5)"
-                        style={styles.searchInput}
-                        value={searchQuery}
-                        onChangeText={(value) => handleInputChange(value)}
-                        onFocus={() => setIsSearching(true)}
-                    />
-                    <Pressable onPress={() => setSubmittedQuery(searchQuery)} style={styles.searchIcon}>
-                        <AntDesign name="search" size={20} color="white" />
-                    </Pressable>
+            <View className="px-4 pt-2 pb-4" style={{ zIndex: 10 }}>
+                <View className="flex-row items-center">
+                    <View style={styles.searchContainer}>
+                        <TextInput
+                            placeholder="Buscar..."
+                            placeholderTextColor="rgba(255,255,255,0.5)"
+                            style={styles.searchInput}
+                            value={searchQuery}
+                            onChangeText={(value) => handleInputChange(value)}
+                            onFocus={() => setIsSearching(true)}
+                        />
+                        <Pressable onPress={() => {
+                            setSubmittedQuery(searchQuery);
+                            const catName = categoriesData?.find(c => c.id === selectedCategoryId)?.name;
+                            setSubmittedCategoryName(catName);
+                        }} style={styles.searchIcon}>
+                            <AntDesign name="search" size={20} color="white" />
+                        </Pressable>
+                    </View>
+                    {isSearching && (
+                        <Pressable onPress={handleSearchCancel} className="ml-3">
+                            <Text className="text-white">Cancelar</Text>
+                        </Pressable>
+                    )}
                 </View>
                 {isSearching && (
-                    <Pressable onPress={handleSearchCancel} className="ml-3">
-                        <Text className="text-white">Cancelar</Text>
-                    </Pressable>
+                    <DropDownPicker
+                        open={dropdownOpen}
+                        value={selectedCategoryId}
+                        items={dropdownItems}
+                        setOpen={setDropdownOpen}
+                        setValue={setSelectedCategoryId}
+                        setItems={setDropdownItems}
+                        placeholder="Seleccionar categoría..."
+                        theme="DARK"
+                        style={{
+                            backgroundColor: '#1A1A1A',
+                            borderWidth: 0,
+                            marginTop: 10,
+                            minHeight: 40,
+                        }}
+                        dropDownContainerStyle={{
+                            backgroundColor: '#2A2A2A',
+                            borderWidth: 0,
+                            marginTop: 10,
+                        }}
+                        onChangeValue={(val) => {
+                            if (val !== null || searchQuery) {
+                                setIsSearching(true);
+                            }
+                        }}
+                        zIndex={3000}
+                        zIndexInverse={1000}
+                    />
                 )}
             </View>
 
