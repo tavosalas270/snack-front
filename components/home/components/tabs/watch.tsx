@@ -1,5 +1,5 @@
 import { PlayVideo } from '@/components/home/components/tabs/play';
-import { useAddFavorite, useCategories, usePayVideo, usePurchases, useSearchVideos, useSeries, useVideos } from '@/components/home/hooks';
+import { useAddFavorite, useCategories, usePayVideo, usePurchases, useSearchVideos, useSeries, useUserTokenData, useVideos } from '@/components/home/hooks';
 import { Series, Videos } from '@/components/home/interfaces';
 import { AntDesign } from '@expo/vector-icons';
 import { InfiniteData, useQueryClient } from '@tanstack/react-query';
@@ -40,7 +40,7 @@ const VideoThumbnail = ({ uri, cost, isPurchased, onPress, onFavorite }: { uri: 
     </Pressable>
 );
 
-const SeriesCard = ({ item, purchasedIds, onVideoSelect, onPurchase }: { item: Series; purchasedIds: Set<number>; onVideoSelect: (path: string) => void; onPurchase: (video: Videos) => void }) => {
+const SeriesCard = ({ item, purchasedIds, currentUserId, onVideoSelect, onPurchase }: { item: Series; purchasedIds: Set<number>; currentUserId?: string; onVideoSelect: (path: string) => void; onPurchase: (video: Videos) => void }) => {
     const [loadMore, setLoadMore] = useState(false);
     const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useVideos(item.id, 2, loadMore);
     const { mutate: addFavorite } = useAddFavorite();
@@ -106,9 +106,9 @@ const SeriesCard = ({ item, purchasedIds, onVideoSelect, onPurchase }: { item: S
                         <VideoThumbnail
                             uri={video?.thumbnail_path ?? ''}
                             cost={video.cost}
-                            isPurchased={purchasedIds.has(video.id)}
+                            isPurchased={purchasedIds.has(video.id) || video.user_id?.toString() === currentUserId}
                             onPress={() => {
-                                if (purchasedIds.has(video.id) || video.cost === 0) {
+                                if (purchasedIds.has(video.id) || video.user_id?.toString() === currentUserId || video.cost === 0) {
                                     onVideoSelect(video?.video_path ?? '');
                                 } else {
                                     onPurchase(video);
@@ -149,8 +149,10 @@ export const WatchTab = () => {
 
     const { data: searchApiVideos, isFetching: isSearchFetching } = useSearchVideos(submittedQuery, submittedCategoryName);
     const { data: purchasesData } = usePurchases();
+    const { data: userData } = useUserTokenData();
     const { mutate: payVideo } = usePayVideo();
 
+    const currentUserId = userData?.id?.toString();
     const purchasedIds = useMemo(() => new Set(purchasesData?.map(p => p.id) ?? []), [purchasesData]);
 
     const handlePurchase = (video: Videos) => {
@@ -254,7 +256,7 @@ export const WatchTab = () => {
         const thumbnailPath = video?.thumbnail_path || video?.thumbnail;
         const videoPath = video?.video_path || video?.video_file;
 
-        const isPurchased = purchasedIds.has(video.id);
+        const isPurchased = purchasedIds.has(video.id) || video.user_id?.toString() === currentUserId;
 
         return (
             <Pressable
@@ -377,7 +379,7 @@ export const WatchTab = () => {
                 <FlatList
                     data={series}
                     keyExtractor={(item) => item.id.toString()}
-                    renderItem={({ item }) => <SeriesCard item={item} purchasedIds={purchasedIds} onVideoSelect={setSelectedVideo} onPurchase={handlePurchase} />}
+                    renderItem={({ item }) => <SeriesCard item={item} purchasedIds={purchasedIds} currentUserId={currentUserId} onVideoSelect={setSelectedVideo} onPurchase={handlePurchase} />}
                     onEndReached={onEndReached}
                     onEndReachedThreshold={0.5}
                     ListFooterComponent={renderFooter}
