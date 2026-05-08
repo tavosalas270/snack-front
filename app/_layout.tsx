@@ -43,8 +43,16 @@ function InitialLayout() {
   );
 }
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 60 * 8, // 8 hours
+      gcTime: 1000 * 60 * 60 * 24, // 24 hours
+    },
+  },
+});
+
 export default function RootLayout() {
-  const queryClient = new QueryClient();
   const colorScheme = useColorScheme();
   const [loaded, error] = useFonts({
     CherryBombOne_400Regular,
