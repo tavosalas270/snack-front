@@ -1,16 +1,16 @@
 import { PlayVideo } from '@/components/home/components/tabs/play';
-import { useAddFavorite, useCategories, useSearchVideos, useSeries, useVideos } from '@/components/home/hooks';
+import { useAddFavorite, useCategories, usePayVideo, usePurchases, useSearchVideos, useSeries, useVideos } from '@/components/home/hooks';
 import { Series, Videos } from '@/components/home/interfaces';
 import { AntDesign } from '@expo/vector-icons';
 import { InfiniteData, useQueryClient } from '@tanstack/react-query';
 import { Image } from 'expo-image';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Alert, FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 
 const BASE_URL = process.env.EXPO_PUBLIC_SERVER_URL ?? '';
 
-const VideoThumbnail = ({ uri, onPress, onFavorite }: { uri: string; onPress: () => void; onFavorite: () => void }) => (
+const VideoThumbnail = ({ uri, cost, isPurchased, onPress, onFavorite }: { uri: string; cost: number; isPurchased: boolean; onPress: () => void; onFavorite: () => void }) => (
     <Pressable onPress={onPress} style={{ position: 'relative' }}>
         {uri ? (
             <Image
@@ -28,10 +28,19 @@ const VideoThumbnail = ({ uri, onPress, onFavorite }: { uri: string; onPress: ()
         >
             <AntDesign name="star" size={14} color="white" />
         </Pressable>
+        {!isPurchased && cost > 0 && (
+            <View style={styles.costBadge}>
+                <Image
+                    source={{ uri: 'https://openmoji.org/data/color/svg/1FA99.svg' }}
+                    style={{ width: 14, height: 14 }}
+                />
+                <Text style={styles.costText}>{cost}</Text>
+            </View>
+        )}
     </Pressable>
 );
 
-const SeriesCard = ({ item, onVideoSelect }: { item: Series; onVideoSelect: (path: string) => void }) => {
+const SeriesCard = ({ item, purchasedIds, onVideoSelect, onPurchase }: { item: Series; purchasedIds: Set<number>; onVideoSelect: (path: string) => void; onPurchase: (video: Videos) => void }) => {
     const [loadMore, setLoadMore] = useState(false);
     const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useVideos(item.id, 2, loadMore);
     const { mutate: addFavorite } = useAddFavorite();
@@ -96,7 +105,15 @@ const SeriesCard = ({ item, onVideoSelect }: { item: Series; onVideoSelect: (pat
                     renderItem={({ item: video }) => (
                         <VideoThumbnail
                             uri={video?.thumbnail_path ?? ''}
-                            onPress={() => onVideoSelect(video?.video_path ?? '')}
+                            cost={video.cost}
+                            isPurchased={purchasedIds.has(video.id)}
+                            onPress={() => {
+                                if (purchasedIds.has(video.id) || video.cost === 0) {
+                                    onVideoSelect(video?.video_path ?? '');
+                                } else {
+                                    onPurchase(video);
+                                }
+                            }}
                             onFavorite={() => addFavorite(video.id.toString())}
                         />
                     )}
@@ -117,7 +134,6 @@ export const WatchTab = () => {
 
     useEffect(() => {
         if (categoriesData) {
-            console.log(categoriesData);
             setDropdownItems(categoriesData.map(c => ({ label: c.name, value: c.id })));
         }
     }, [categoriesData]);
@@ -132,6 +148,24 @@ export const WatchTab = () => {
     const [isSearching, setIsSearching] = useState(false);
 
     const { data: searchApiVideos, isFetching: isSearchFetching } = useSearchVideos(submittedQuery, submittedCategoryName);
+    const { data: purchasesData } = usePurchases();
+    const { mutate: payVideo } = usePayVideo();
+
+    const purchasedIds = useMemo(() => new Set(purchasesData?.map(p => p.id) ?? []), [purchasesData]);
+
+    const handlePurchase = (video: Videos) => {
+        Alert.alert(
+            "Comprar Video",
+            `¿Desea comprar este video por ${video.cost}?`,
+            [
+                { text: "No", style: "cancel" },
+                {
+                    text: "Si",
+                    onPress: () => payVideo(video.id.toString())
+                }
+            ]
+        );
+    };
 
     // Aplanar páginas y filtrar items undefined/null de forma segura
     const series: Series[] = data?.pages.flat().filter((item): item is Series => item != null) ?? [];
@@ -166,8 +200,6 @@ export const WatchTab = () => {
         }
 
         const uniqueVideos = Array.from(new Map(allVideos.map(v => [v.id, v])).values());
-        console.log(selectedCategoryId);
-        console.log("uniqueVideos: ", uniqueVideos);
         const videosToSee = uniqueVideos.filter(v => {
             const matchesText = searchQuery
                 ? v.title?.toLowerCase().includes(searchQuery.toLowerCase())
@@ -179,7 +211,6 @@ export const WatchTab = () => {
 
             return matchesText && matchesCategory;
         });
-        console.log("videosToSee: ", videosToSee);
         return videosToSee
     }, [searchQuery, selectedCategoryId, queryClient, searchApiVideos]);
 
@@ -223,10 +254,18 @@ export const WatchTab = () => {
         const thumbnailPath = video?.thumbnail_path || video?.thumbnail;
         const videoPath = video?.video_path || video?.video_file;
 
+        const isPurchased = purchasedIds.has(video.id);
+
         return (
             <Pressable
                 className="mb-6 px-4"
-                onPress={() => videoPath ? setSelectedVideo(videoPath) : null}
+                onPress={() => {
+                    if (isPurchased || video.cost === 0) {
+                        videoPath ? setSelectedVideo(videoPath) : null;
+                    } else {
+                        handlePurchase(video);
+                    }
+                }}
             >
                 <View className="rounded-2xl overflow-hidden aspect-video bg-black relative">
                     {thumbnailPath ? (
@@ -251,6 +290,15 @@ export const WatchTab = () => {
                         >
                             {video?.title || 'Sin título'}
                         </Text>
+                        {!isPurchased && video.cost > 0 && (
+                            <View className="flex-row items-center mt-1">
+                                <Image
+                                    source={{ uri: 'https://openmoji.org/data/color/svg/1FA99.svg' }}
+                                    style={{ width: 14, height: 14 }}
+                                />
+                                <Text className="text-[#FFD700] text-xs font-bold ml-1">{video.cost}</Text>
+                            </View>
+                        )}
                     </View>
                 </View>
             </Pressable>
@@ -329,7 +377,7 @@ export const WatchTab = () => {
                 <FlatList
                     data={series}
                     keyExtractor={(item) => item.id.toString()}
-                    renderItem={({ item }) => <SeriesCard item={item} onVideoSelect={setSelectedVideo} />}
+                    renderItem={({ item }) => <SeriesCard item={item} purchasedIds={purchasedIds} onVideoSelect={setSelectedVideo} onPurchase={handlePurchase} />}
                     onEndReached={onEndReached}
                     onEndReachedThreshold={0.5}
                     ListFooterComponent={renderFooter}
@@ -385,5 +433,22 @@ const styles = StyleSheet.create({
     },
     searchIcon: {
         marginLeft: 8,
+    },
+    costBadge: {
+        position: 'absolute',
+        bottom: 4,
+        right: 4,
+        backgroundColor: 'rgba(0,0,0,0.7)',
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 6,
+        paddingVertical: 2,
+        borderRadius: 10,
+        gap: 4,
+    },
+    costText: {
+        color: '#FFD700',
+        fontSize: 10,
+        fontWeight: 'bold',
     }
 });

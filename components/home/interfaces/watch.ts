@@ -15,6 +15,7 @@ export interface Videos {
     user_id?: number;
     username?: string;
     created_at: Date;
+    cost: number;
 }
 
 export interface Series {
@@ -35,4 +36,12 @@ export interface Favorites {
 export interface Categories {
     id: number;
     name: string;
+}
+
+export interface UserTokenData {
+    id: string;
+    username: string;
+    email: string;
+    tokens: number;
+    created_at: Date;
 }

@@ -1,5 +1,7 @@
 import { WatchTab } from '@/components/home/components/tabs/watch';
 import { FavoritesTab } from '@/components/home/components/tabs/favorites';
+import { useUserTokenData } from '@/components/home/hooks';
+import { AntDesign } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import React, { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -61,10 +63,28 @@ export default function HomeScreen() {
                 <View style={styles.content}>
                     {renderContent(activeTab)}
                 </View>
+
+                {/* Tokens Counter */}
+                <TokenCounter />
             </SafeAreaView>
         </View>
     );
 }
+
+const TokenCounter = () => {
+    const { data } = useUserTokenData();
+    if (!data) return null;
+
+    return (
+        <View style={styles.tokenCounter}>
+            <Image
+                source={{ uri: 'https://openmoji.org/data/color/svg/1FA99.svg' }}
+                style={{ width: 20, height: 20 }}
+            />
+            <Text style={styles.tokenText}>{data.tokens ?? 0}</Text>
+        </View>
+    );
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -107,5 +127,24 @@ const styles = StyleSheet.create({
     },
     empty: {
         flex: 1,
+    },
+    tokenCounter: {
+        position: 'absolute',
+        bottom: 20,
+        left: 20,
+        backgroundColor: 'rgba(0,0,0,0.8)',
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 20,
+        gap: 6,
+        borderWidth: 1,
+        borderColor: 'rgba(255,215,0,0.3)',
+    },
+    tokenText: {
+        color: '#FFD700',
+        fontSize: 16,
+        fontWeight: 'bold',
     },
 });

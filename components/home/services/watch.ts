@@ -1,4 +1,26 @@
-import { Categories, Favorites, Series } from "../interfaces";
+import { Categories, Favorites, Series, UserTokenData } from "../interfaces";
+
+export const getUserTokenData = async (token: string | null = null): Promise<UserTokenData> => {
+    const baseUrl = process.env.EXPO_PUBLIC_SERVER_URL;
+    const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+    };
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`${baseUrl}/api/users/me/`, {
+        method: 'GET',
+        headers,
+    });
+
+    if (!response.ok) {
+        throw { status: response.status };
+    }
+
+    const data = await response.json();
+    return data;
+};
 
 export const getSeries = async (page: number = 1, token: string | null = null): Promise<Series[]> => {
     const baseUrl = process.env.EXPO_PUBLIC_SERVER_URL;
@@ -62,7 +84,6 @@ export const getFavorites = async (page: number = 1, token: string | null = null
 };
 
 export const addFavorite = async (video: string, token: string | null = null): Promise<Favorites> => {
-    console.log("Hola: ", video)
     const baseUrl = process.env.EXPO_PUBLIC_SERVER_URL;
     const headers: Record<string, string> = {
         'Content-Type': 'application/json',
