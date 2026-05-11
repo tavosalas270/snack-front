@@ -1,12 +1,17 @@
 import { Videos } from "../interfaces";
 
-export const getVideos = async (page: number = 1, serie: number): Promise<Videos[]> => {
+export const getVideos = async (page: number = 1, serie: number, token: string | null = null): Promise<Videos[]> => {
     const baseUrl = process.env.EXPO_PUBLIC_SERVER_URL;
+    const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+    };
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+
     const response = await fetch(`${baseUrl}/api/videos/?page=${page}&serie=${serie}`, {
         method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-        },
+        headers,
     });
 
     if (!response.ok) {
@@ -40,7 +45,7 @@ export const getPurchases = async (token: string): Promise<Videos[]> => {
     return data;
 };
 
-export const searchVideos = async (query: string, category?: string): Promise<Videos[]> => {
+export const searchVideos = async (query: string, category?: string, token: string | null = null): Promise<Videos[]> => {
     const baseUrl = process.env.EXPO_PUBLIC_SERVER_URL;
     let url = `${baseUrl}/api/videos/?`;
     if (query) {
@@ -50,11 +55,16 @@ export const searchVideos = async (query: string, category?: string): Promise<Vi
         url += `category=${encodeURIComponent(category)}`;
     }
 
+    const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+    };
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+
     const response = await fetch(url, {
         method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-        },
+        headers,
     });
 
     if (!response.ok) {

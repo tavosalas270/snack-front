@@ -4,12 +4,14 @@ import { UserTokenData, Videos } from '../interfaces';
 import { getPurchases, getUserTokenData, getVideos, postPayVideo } from '../services';
 
 export const useVideos = (serie: number, initialPage: number = 1, enabled: boolean = true) => {
+    const { accessToken } = useLoginContext();
+
     const query = useInfiniteQuery({
-        queryKey: ['videos', serie],
+        queryKey: ['videos', serie, accessToken],
         initialPageParam: initialPage,
         queryFn: async ({ pageParam }): Promise<Videos[]> => {
             try {
-                return await getVideos(pageParam as number, serie);
+                return await getVideos(pageParam as number, serie, accessToken);
             } catch {
                 return [];
             }
@@ -31,8 +33,11 @@ export const usePayVideo = () => {
     return useMutation({
         mutationFn: (videoId: string) => postPayVideo(videoId, accessToken),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['purchases'] });
             queryClient.invalidateQueries({ queryKey: ['userTokenData'] });
+            queryClient.invalidateQueries({ queryKey: ['series'] });
+            queryClient.invalidateQueries({ queryKey: ['videos'] });
+            queryClient.invalidateQueries({ queryKey: ['searchVideos'] });
+            queryClient.invalidateQueries({ queryKey: ['favorites'] });
         },
     });
 };

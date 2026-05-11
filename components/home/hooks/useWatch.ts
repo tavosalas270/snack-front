@@ -40,11 +40,13 @@ export const useCategories = () => {
 };
 
 export const useSearchVideos = (value: string, category?: string) => {
+    const { accessToken } = useLoginContext();
+
     const query = useQuery({
-        queryKey: ['searchVideos', value, category],
+        queryKey: ['searchVideos', value, category, accessToken],
         queryFn: async (): Promise<Videos[]> => {
             try {
-                return await searchVideos(value, category);
+                return await searchVideos(value, category, accessToken);
             } catch {
                 return [];
             }
