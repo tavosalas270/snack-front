@@ -51,7 +51,7 @@ export const useSearchVideos = (value: string, category?: string) => {
                 return [];
             }
         },
-        enabled: value.length > 0 || (category ? category.length > 0 : false),
+        enabled: value.length > 0 || (category ? category.length > 0 : false)
     });
 
     return query;
@@ -117,7 +117,7 @@ export const useAddFavorite = () => {
             queryClient.setQueriesData({ queryKey: ['searchVideos'] }, (oldData: any) => {
                 if (!oldData) return oldData;
                 if (Array.isArray(oldData)) {
-                     return oldData.map((v: Videos) => v.id.toString() === videoId.toString() ? { ...v, is_favorite: isFav } : v);
+                    return oldData.map((v: Videos) => v.id.toString() === videoId.toString() ? { ...v, is_favorite: isFav } : v);
                 }
                 return oldData;
             });

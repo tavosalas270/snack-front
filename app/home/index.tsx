@@ -61,7 +61,12 @@ export default function HomeScreen() {
 
                 {/* Content */}
                 <View style={styles.content}>
-                    {renderContent(activeTab)}
+                    <View style={{ flex: 1, display: activeTab === 'WATCH' ? 'flex' : 'none' }}>
+                        <WatchTab />
+                    </View>
+                    <View style={{ flex: 1, display: activeTab === 'FAVORITES' ? 'flex' : 'none' }}>
+                        <FavoritesTab />
+                    </View>
                 </View>
 
                 {/* Tokens Counter */}

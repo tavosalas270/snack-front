@@ -54,7 +54,7 @@ export const searchVideos = async (query: string, category?: string, token: stri
     if (category) {
         url += `category=${encodeURIComponent(category)}`;
     }
-
+    console.log(url)
     const headers: Record<string, string> = {
         'Content-Type': 'application/json',
     };

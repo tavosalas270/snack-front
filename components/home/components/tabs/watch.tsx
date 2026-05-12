@@ -180,47 +180,70 @@ export const WatchTab = () => {
     const series: Series[] = data?.pages.flat().filter((item): item is Series => item != null) ?? [];
 
     const filteredVideos = useMemo(() => {
-        if (!searchQuery && !selectedCategoryId) return [];
+        const hasFilters = searchQuery || selectedCategoryId;
+        const finalVideos: Videos[] = [];
+        const finalSeenIds = new Set<number>();
 
-        const seriesData = queryClient.getQueriesData<InfiniteData<Series[]>>({ queryKey: ['series'] });
-        let allVideos: Videos[] = [];
+        if (hasFilters) {
+            const seriesData = queryClient.getQueriesData<InfiniteData<Series[]>>({ queryKey: ['series'] });
+            let localVideos: Videos[] = [];
+            const localSeenIds = new Set<number>();
 
-        seriesData.forEach(([key, data]) => {
-            if (data && data.pages) {
-                data.pages.flat().forEach(serie => {
-                    if (serie && serie.videos) {
-                        allVideos.push(...serie.videos);
-                    }
-                });
-            }
-        });
+            seriesData.forEach(([key, data]) => {
+                if (data && data.pages) {
+                    data.pages.flat().forEach(serie => {
+                        if (serie && serie.videos) {
+                            serie.videos.forEach(v => {
+                                if (!localSeenIds.has(v.id)) {
+                                    localVideos.push(v);
+                                    localSeenIds.add(v.id);
+                                }
+                            });
+                        }
+                    });
+                }
+            });
 
-        const videosData = queryClient.getQueriesData<InfiniteData<Videos[]>>({ queryKey: ['videos'] });
-        videosData.forEach(([key, data]) => {
-            if (data && data.pages) {
-                data.pages.flat().forEach(video => {
-                    if (video) allVideos.push(video);
-                });
-            }
-        });
+            const videosData = queryClient.getQueriesData<InfiniteData<Videos[]>>({ queryKey: ['videos'] });
+            videosData.forEach(([key, data]) => {
+                if (data && data.pages) {
+                    data.pages.flat().forEach(video => {
+                        if (video && !localSeenIds.has(video.id)) {
+                            localVideos.push(video);
+                            localSeenIds.add(video.id);
+                        }
+                    });
+                }
+            });
 
-        if (searchApiVideos) {
-            allVideos.push(...searchApiVideos);
+            const filteredLocal = localVideos.filter(v => {
+                const matchesText = searchQuery
+                    ? v.title?.toLowerCase().includes(searchQuery.toLowerCase())
+                    : true;
+
+                const matchesCategory = selectedCategoryId
+                    ? v.category_id === selectedCategoryId
+                    : true;
+
+                return matchesText && matchesCategory;
+            });
+
+            filteredLocal.forEach(v => {
+                finalVideos.push(v);
+                finalSeenIds.add(v.id);
+            });
         }
 
-        const uniqueVideos = Array.from(new Map(allVideos.map(v => [v.id, v])).values());
-        const videosToSee = uniqueVideos.filter(v => {
-            const matchesText = searchQuery
-                ? v.title?.toLowerCase().includes(searchQuery.toLowerCase())
-                : true;
+        if (searchApiVideos && Array.isArray(searchApiVideos)) {
+            searchApiVideos.forEach(v => {
+                if (!finalSeenIds.has(v.id)) {
+                    finalVideos.push(v);
+                    finalSeenIds.add(v.id);
+                }
+            });
+        }
 
-            const matchesCategory = selectedCategoryId
-                ? v.category_id === selectedCategoryId
-                : true;
-
-            return matchesText && matchesCategory;
-        });
-        return videosToSee
+        return finalVideos;
     }, [searchQuery, selectedCategoryId, queryClient, searchApiVideos]);
 
     const handleSearchCancel = () => {
