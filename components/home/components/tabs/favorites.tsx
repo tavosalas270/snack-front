@@ -1,15 +1,41 @@
+import { PlayVideo } from '@/components/home/components/tabs/play';
+import { useFavorites, usePayVideo, useUserTokenData } from '@/components/home/hooks';
+import { Favorites, Videos } from '@/components/home/interfaces';
 import { Image } from 'expo-image';
 import React, { useCallback, useState } from 'react';
-import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
-import { useFavorites } from '@/components/home/hooks';
-import { PlayVideo } from '@/components/home/components/tabs/play';
-import { Favorites } from '@/components/home/interfaces';
+import { ActivityIndicator, Alert, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 
 const BASE_URL = process.env.EXPO_PUBLIC_SERVER_URL ?? '';
 
 export const FavoritesTab = () => {
     const { data, isFetchingNextPage, hasNextPage, fetchNextPage, isLoading } = useFavorites();
+    const { mutate: payVideo } = usePayVideo();
+    const { data: userData } = useUserTokenData();
     const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
+
+    const handlePurchase = (video: Videos) => {
+        const userTokens = userData?.tokens ?? 0;
+
+        if (userTokens < video.cost) {
+            Alert.alert(
+                "Saldo Insuficiente",
+                "No tiene saldo suficiente para adquirir este video."
+            );
+            return;
+        }
+
+        Alert.alert(
+            "Comprar Video",
+            `¿Desea comprar este video por ${video.cost}?`,
+            [
+                { text: "No", style: "cancel" },
+                {
+                    text: "Si",
+                    onPress: () => payVideo(video.id.toString())
+                }
+            ]
+        );
+    };
 
     // Aplanar páginas y filtrar items undefined/null de forma segura
     const favorites: Favorites[] = data?.pages.flat().filter((item): item is Favorites => item != null) ?? [];
@@ -43,10 +69,18 @@ export const FavoritesTab = () => {
         const thumbnailPath = video?.thumbnail_path || video?.thumbnail;
         const videoPath = video?.video_path || video?.video_file;
 
+        const isPurchased = (video.is_unlocked ?? false) || (video.cost === 0);
+
         return (
-            <Pressable 
+            <Pressable
                 className="mb-6 px-4"
-                onPress={() => videoPath ? setSelectedVideo(videoPath) : null}
+                onPress={() => {
+                    if (isPurchased) {
+                        videoPath ? setSelectedVideo(videoPath) : null;
+                    } else {
+                        handlePurchase(video);
+                    }
+                }}
             >
                 <View className="rounded-2xl overflow-hidden aspect-video bg-black relative">
                     {thumbnailPath ? (
@@ -77,6 +111,15 @@ export const FavoritesTab = () => {
                             </Text>
                         ) : null}
                     </View>
+                    {!isPurchased && video.cost > 0 && (
+                        <View style={styles.costBadge}>
+                            <Image
+                                source={{ uri: 'https://openmoji.org/data/color/svg/1FA99.svg' }}
+                                style={{ width: 14, height: 14 }}
+                            />
+                            <Text style={styles.costText}>{video.cost}</Text>
+                        </View>
+                    )}
                 </View>
             </Pressable>
         );
@@ -86,7 +129,7 @@ export const FavoritesTab = () => {
         <View className="flex-1">
             <FlatList
                 data={favorites}
-                keyExtractor={(item) => item.id.toString()}
+                keyExtractor={(item, index) => item?.id?.toString() ?? index.toString()}
                 renderItem={renderItem}
                 onEndReached={onEndReached}
                 onEndReachedThreshold={0.5}
@@ -116,5 +159,22 @@ const styles = StyleSheet.create({
     thumbnail: {
         width: '100%',
         height: '100%'
+    },
+    costBadge: {
+        position: 'absolute',
+        bottom: 12,
+        right: 12,
+        backgroundColor: 'rgba(0,0,0,0.7)',
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        borderRadius: 10,
+        gap: 4,
+    },
+    costText: {
+        color: '#FFD700',
+        fontSize: 12,
+        fontWeight: 'bold',
     }
 });

@@ -1,4 +1,4 @@
-import { Categories, Favorites, Series, UserTokenData } from "../interfaces";
+import { AddFavoriteResponse, Categories, Favorites, Series, UserTokenData } from "../interfaces";
 
 export const getUserTokenData = async (token: string | null = null): Promise<UserTokenData> => {
     const baseUrl = process.env.EXPO_PUBLIC_SERVER_URL;
@@ -83,7 +83,7 @@ export const getFavorites = async (page: number = 1, token: string | null = null
     return data;
 };
 
-export const addFavorite = async (video: string, token: string | null = null): Promise<Favorites> => {
+export const addFavorite = async (video: string, token: string | null = null): Promise<AddFavoriteResponse> => {
     const baseUrl = process.env.EXPO_PUBLIC_SERVER_URL;
     const headers: Record<string, string> = {
         'Content-Type': 'application/json',
@@ -103,7 +103,6 @@ export const addFavorite = async (video: string, token: string | null = null): P
     if (!response.ok) {
         throw { status: response.status };
     }
-
     const data = await response.json();
     return data;
 };

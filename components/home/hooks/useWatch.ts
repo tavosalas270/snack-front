@@ -1,5 +1,5 @@
 import { useLoginContext } from '@/components/signUpLogin/context';
-import { InfiniteData, useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Categories, Favorites, Series, Videos } from '../interfaces';
 import { addFavorite, getCategories, getFavorites, getSeries, searchVideos } from '../services';
 
@@ -85,23 +85,11 @@ export const useAddFavorite = () => {
 
     return useMutation({
         mutationFn: (video: string) => addFavorite(video, accessToken),
-        onSuccess: (newFavorite) => {
-            queryClient.setQueryData<InfiniteData<Favorites[]>>(['favorites', accessToken], (oldData) => {
-                if (!oldData || !oldData.pages || oldData.pages.length === 0) {
-                    return {
-                        pages: [[newFavorite]],
-                        pageParams: [1],
-                    };
-                }
-
-                return {
-                    ...oldData,
-                    pages: [
-                        [newFavorite, ...oldData.pages[0]],
-                        ...oldData.pages.slice(1),
-                    ],
-                };
-            });
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['favorites'] });
+            queryClient.invalidateQueries({ queryKey: ['series'] });
+            queryClient.invalidateQueries({ queryKey: ['videos'] });
+            queryClient.invalidateQueries({ queryKey: ['searchVideos'] });
         },
     });
 };

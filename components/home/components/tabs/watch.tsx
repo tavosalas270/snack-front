@@ -1,5 +1,5 @@
 import { PlayVideo } from '@/components/home/components/tabs/play';
-import { useAddFavorite, useCategories, usePayVideo, useSearchVideos, useSeries, useVideos } from '@/components/home/hooks';
+import { useAddFavorite, useCategories, usePayVideo, useSearchVideos, useSeries, useUserTokenData, useVideos } from '@/components/home/hooks';
 import { Series, Videos } from '@/components/home/interfaces';
 import { AntDesign } from '@expo/vector-icons';
 import { InfiniteData, useQueryClient } from '@tanstack/react-query';
@@ -10,7 +10,7 @@ import DropDownPicker from 'react-native-dropdown-picker';
 
 const BASE_URL = process.env.EXPO_PUBLIC_SERVER_URL ?? '';
 
-const VideoThumbnail = ({ uri, cost, isPurchased, onPress, onFavorite }: { uri: string; cost: number; isPurchased: boolean; onPress: () => void; onFavorite: () => void }) => (
+const VideoThumbnail = ({ uri, cost, isPurchased, isFavorite, onPress, onFavorite }: { uri: string; cost: number; isPurchased: boolean; isFavorite: boolean; onPress: () => void; onFavorite: () => void }) => (
     <Pressable onPress={onPress} style={{ position: 'relative' }}>
         {uri ? (
             <Image
@@ -26,7 +26,7 @@ const VideoThumbnail = ({ uri, cost, isPurchased, onPress, onFavorite }: { uri: 
             style={styles.favoriteButton}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-            <AntDesign name="star" size={14} color="white" />
+            <AntDesign name="star" size={14} color={isFavorite ? "#D63AF9" : "white"} />
         </Pressable>
         {!isPurchased && cost > 0 && (
             <View style={styles.costBadge}>
@@ -107,6 +107,7 @@ const SeriesCard = ({ item, onVideoSelect, onPurchase }: { item: Series; onVideo
                             uri={video?.thumbnail_path ?? ''}
                             cost={video.cost}
                             isPurchased={(video.is_unlocked ?? false) || (video.cost === 0)}
+                            isFavorite={video.is_favorite ?? false}
                             onPress={() => {
                                 if ((video.is_unlocked ?? false) || (video.cost === 0)) {
                                     onVideoSelect(video?.video_path ?? '');
@@ -149,8 +150,19 @@ export const WatchTab = () => {
 
     const { data: searchApiVideos, isFetching: isSearchFetching } = useSearchVideos(submittedQuery, submittedCategoryName);
     const { mutate: payVideo } = usePayVideo();
+    const { data: userData } = useUserTokenData();
 
     const handlePurchase = (video: Videos) => {
+        const userTokens = userData?.tokens ?? 0;
+
+        if (userTokens < video.cost) {
+            Alert.alert(
+                "Saldo Insuficiente",
+                "No tiene saldo suficiente para adquirir este video."
+            );
+            return;
+        }
+
         Alert.alert(
             "Comprar Video",
             `¿Desea comprar este video por ${video.cost}?`,
