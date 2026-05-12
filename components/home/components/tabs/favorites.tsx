@@ -1,6 +1,7 @@
 import { PlayVideo } from '@/components/home/components/tabs/play';
-import { useFavorites, usePayVideo, useUserTokenData } from '@/components/home/hooks';
+import { useAddFavorite, useFavorites, usePayVideo, useUserTokenData } from '@/components/home/hooks';
 import { Favorites, Videos } from '@/components/home/interfaces';
+import { AntDesign } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import React, { useCallback, useState } from 'react';
 import { ActivityIndicator, Alert, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
@@ -11,6 +12,7 @@ export const FavoritesTab = () => {
     const { data, isFetchingNextPage, hasNextPage, fetchNextPage, isLoading } = useFavorites();
     const { mutate: payVideo } = usePayVideo();
     const { data: userData } = useUserTokenData();
+    const { mutate: addFavorite } = useAddFavorite();
     const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
 
     const handlePurchase = (video: Videos) => {
@@ -93,6 +95,13 @@ export const FavoritesTab = () => {
                         <View style={styles.thumbnail} />
                     )}
                     <View className="absolute inset-0 bg-gradient-to-b from-transparent from-40% to-black/85" />
+                    <Pressable
+                        onPress={() => addFavorite(video.id.toString())}
+                        style={styles.favoriteButton}
+                        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                    >
+                        <AntDesign name="star" size={14} color="#D63AF9" />
+                    </Pressable>
                     <View className="absolute bottom-3.5 inset-x-3.5">
                         <Text
                             className="text-white text-lg font-bold tracking-[0.5px]"
@@ -159,6 +168,14 @@ const styles = StyleSheet.create({
     thumbnail: {
         width: '100%',
         height: '100%'
+    },
+    favoriteButton: {
+        position: 'absolute',
+        top: 4,
+        right: 4,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        padding: 4,
+        borderRadius: 12,
     },
     costBadge: {
         position: 'absolute',

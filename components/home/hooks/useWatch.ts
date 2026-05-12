@@ -85,7 +85,43 @@ export const useAddFavorite = () => {
 
     return useMutation({
         mutationFn: (video: string) => addFavorite(video, accessToken),
-        onSuccess: () => {
+        onSuccess: (response, videoId) => {
+            const isFav = response.is_favorite;
+
+            // Actualizar caché de series
+            queryClient.setQueriesData({ queryKey: ['series'] }, (oldData: any) => {
+                if (!oldData?.pages) return oldData;
+                return {
+                    ...oldData,
+                    pages: oldData.pages.map((page: Series[]) =>
+                        page.map((serie: Series) => ({
+                            ...serie,
+                            videos: serie.videos?.map((v: Videos) => v.id.toString() === videoId.toString() ? { ...v, is_favorite: isFav } : v)
+                        }))
+                    )
+                };
+            });
+
+            // Actualizar caché de videos (paginación)
+            queryClient.setQueriesData({ queryKey: ['videos'] }, (oldData: any) => {
+                if (!oldData?.pages) return oldData;
+                return {
+                    ...oldData,
+                    pages: oldData.pages.map((page: Videos[]) =>
+                        page.map((v: Videos) => v.id.toString() === videoId.toString() ? { ...v, is_favorite: isFav } : v)
+                    )
+                };
+            });
+
+            // Actualizar caché de búsqueda (searchVideos)
+            queryClient.setQueriesData({ queryKey: ['searchVideos'] }, (oldData: any) => {
+                if (!oldData) return oldData;
+                if (Array.isArray(oldData)) {
+                     return oldData.map((v: Videos) => v.id.toString() === videoId.toString() ? { ...v, is_favorite: isFav } : v);
+                }
+                return oldData;
+            });
+
             queryClient.invalidateQueries({ queryKey: ['favorites'] });
             queryClient.invalidateQueries({ queryKey: ['series'] });
             queryClient.invalidateQueries({ queryKey: ['videos'] });
