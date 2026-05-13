@@ -40,7 +40,7 @@ const VideoThumbnail = ({ uri, cost, isPurchased, isFavorite, onPress, onFavorit
     </Pressable>
 );
 
-const SeriesCard = ({ item, onVideoSelect, onPurchase }: { item: Series; onVideoSelect: (path: string) => void; onPurchase: (video: Videos) => void }) => {
+const SeriesCard = ({ item, onVideoSelect, onPurchase }: { item: Series; onVideoSelect: (video: Videos) => void; onPurchase: (video: Videos) => void }) => {
     const [loadMore, setLoadMore] = useState(false);
     const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useVideos(item.id, 2, loadMore);
     const { mutate: addFavorite } = useAddFavorite();
@@ -110,7 +110,7 @@ const SeriesCard = ({ item, onVideoSelect, onPurchase }: { item: Series; onVideo
                             isFavorite={video.is_favorite ?? false}
                             onPress={() => {
                                 if ((video.is_unlocked ?? false) || (video.cost === 0)) {
-                                    onVideoSelect(video?.video_path ?? '');
+                                    onVideoSelect(video);
                                 } else {
                                     onPurchase(video);
                                 }
@@ -140,7 +140,7 @@ export const WatchTab = () => {
     }, [categoriesData]);
 
     const { data, isFetchingNextPage, hasNextPage, fetchNextPage, isLoading } = useSeries();
-    const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
+    const [selectedVideo, setSelectedVideo] = useState<Videos | null>(null);
 
     const queryClient = useQueryClient();
     const [searchQuery, setSearchQuery] = useState('');
@@ -223,6 +223,17 @@ export const WatchTab = () => {
         return videosToSee
     }, [searchQuery, selectedCategoryId, queryClient, searchApiVideos]);
 
+    const currentSelectedVideo = useMemo(() => {
+        if (!selectedVideo) return null;
+        for (const s of series) {
+            const found = s.videos?.find(v => v.id === selectedVideo.id);
+            if (found) return found;
+        }
+        const foundFiltered = filteredVideos.find(v => v.id === selectedVideo.id);
+        if (foundFiltered) return foundFiltered;
+        return selectedVideo;
+    }, [selectedVideo, series, filteredVideos]);
+
     const handleSearchCancel = () => {
         setIsSearching(false);
         setSearchQuery('');
@@ -270,7 +281,7 @@ export const WatchTab = () => {
                 className="mb-6 px-4"
                 onPress={() => {
                     if (isPurchased) {
-                        videoPath ? setSelectedVideo(videoPath) : null;
+                        videoPath ? setSelectedVideo(video) : null;
                     } else {
                         handlePurchase(video);
                     }
@@ -394,9 +405,9 @@ export const WatchTab = () => {
                     showsVerticalScrollIndicator={false}
                 />
             )}
-            {selectedVideo && (
+            {currentSelectedVideo && (
                 <PlayVideo
-                    videoPath={selectedVideo}
+                    video={currentSelectedVideo}
                     onClose={() => setSelectedVideo(null)}
                 />
             )}

@@ -1,4 +1,4 @@
-import { AddFavoriteResponse, Categories, Favorites, Series, UserTokenData } from "../interfaces";
+import { AddFavoriteResponse, Categories, Favorites, LikeVideoResponse, Series, UserTokenData } from "../interfaces";
 
 export const getUserTokenData = async (token: string | null = null): Promise<UserTokenData> => {
     const baseUrl = process.env.EXPO_PUBLIC_SERVER_URL;
@@ -97,6 +97,30 @@ export const addFavorite = async (video: string, token: string | null = null): P
         headers,
         body: JSON.stringify({
             video: video,
+        }),
+    });
+
+    if (!response.ok) {
+        throw { status: response.status };
+    }
+    const data = await response.json();
+    return data;
+};
+
+export const postLikeVideo = async (videoId: string, token: string | null = null): Promise<LikeVideoResponse> => {
+    const baseUrl = process.env.EXPO_PUBLIC_SERVER_URL;
+    const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+    };
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`${baseUrl}/api/video-interactions/toggle-like/`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+            video_id: videoId,
         }),
     });
 

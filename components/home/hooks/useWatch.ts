@@ -1,7 +1,7 @@
 import { useLoginContext } from '@/components/signUpLogin/context';
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Categories, Favorites, Series, Videos } from '../interfaces';
-import { addFavorite, getCategories, getFavorites, getSeries, searchVideos } from '../services';
+import { addFavorite, getCategories, getFavorites, getSeries, postLikeVideo, searchVideos } from '../services';
 
 export const useSeries = () => {
     const { accessToken } = useLoginContext();
@@ -79,6 +79,113 @@ export const useFavorites = () => {
     return query;
 };
 
+export const useLikeVideo = () => {
+    const queryClient = useQueryClient();
+    const { accessToken } = useLoginContext();
+
+    return useMutation({
+        mutationFn: (videoId: string) => postLikeVideo(videoId, accessToken),
+        onSuccess: (response, videoId) => {
+            const isLiked = response.status === 'liked';
+            const likeDiff = isLiked ? 1 : -1;
+
+            // Actualizar caché de series
+            queryClient.setQueriesData({ queryKey: ['series'] }, (oldData: any) => {
+                if (!oldData?.pages) return oldData;
+                return {
+                    ...oldData,
+                    pages: oldData.pages.map((page: Series[]) =>
+                        page.map(serie => ({
+                            ...serie,
+                            videos: serie.videos.map(v => {
+                                if (v.id.toString() === videoId.toString()) {
+                                    // Evitar duplicar la operación si el estado ya coincide
+                                    if (v.user_has_liked === isLiked) return v;
+                                    return {
+                                        ...v,
+                                        user_has_liked: isLiked,
+                                        likes_count: Math.max(0, (v.likes_count || 0) + likeDiff)
+                                    };
+                                }
+                                return v;
+                            })
+                        }))
+                    )
+                };
+            });
+
+            // Actualizar caché de videos
+            queryClient.setQueriesData({ queryKey: ['videos'] }, (oldData: any) => {
+                if (!oldData?.pages) return oldData;
+                return {
+                    ...oldData,
+                    pages: oldData.pages.map((page: Videos[]) =>
+                        page.map(v => {
+                            if (v.id.toString() === videoId.toString()) {
+                                if (v.user_has_liked === isLiked) return v;
+                                return {
+                                    ...v,
+                                    user_has_liked: isLiked,
+                                    likes_count: Math.max(0, (v.likes_count || 0) + likeDiff)
+                                };
+                            }
+                            return v;
+                        })
+                    )
+                };
+            });
+
+            // Actualizar caché de favoritos
+            queryClient.setQueriesData({ queryKey: ['favorites'] }, (oldData: any) => {
+                if (!oldData?.pages) return oldData;
+                return {
+                    ...oldData,
+                    pages: oldData.pages.map((page: Favorites[]) =>
+                        page.map(fav => {
+                            if (fav.video_details?.id.toString() === videoId.toString()) {
+                                if (fav.video_details.user_has_liked === isLiked) return fav;
+                                return {
+                                    ...fav,
+                                    video_details: {
+                                        ...fav.video_details,
+                                        user_has_liked: isLiked,
+                                        likes_count: Math.max(0, (fav.video_details.likes_count || 0) + likeDiff)
+                                    }
+                                };
+                            }
+                            return fav;
+                        })
+                    )
+                };
+            });
+
+            // Actualizar caché de búsqueda (searchVideos)
+            queryClient.setQueriesData({ queryKey: ['searchVideos'] }, (oldData: any) => {
+                if (!oldData) return oldData;
+                if (Array.isArray(oldData)) {
+                    return oldData.map((v: Videos) => {
+                        if (v.id.toString() === videoId.toString()) {
+                            if (v.user_has_liked === isLiked) return v;
+                            return {
+                                ...v,
+                                user_has_liked: isLiked,
+                                likes_count: Math.max(0, (v.likes_count || 0) + likeDiff)
+                            };
+                        }
+                        return v;
+                    });
+                }
+                return oldData;
+            });
+
+            queryClient.invalidateQueries({ queryKey: ['series'] });
+            queryClient.invalidateQueries({ queryKey: ['videos'] });
+            queryClient.invalidateQueries({ queryKey: ['favorites'] });
+            queryClient.invalidateQueries({ queryKey: ['searchVideos'] });
+        }
+    });
+};
+
 export const useAddFavorite = () => {
     const queryClient = useQueryClient();
     const { accessToken } = useLoginContext();
@@ -117,7 +224,7 @@ export const useAddFavorite = () => {
             queryClient.setQueriesData({ queryKey: ['searchVideos'] }, (oldData: any) => {
                 if (!oldData) return oldData;
                 if (Array.isArray(oldData)) {
-                     return oldData.map((v: Videos) => v.id.toString() === videoId.toString() ? { ...v, is_favorite: isFav } : v);
+                    return oldData.map((v: Videos) => v.id.toString() === videoId.toString() ? { ...v, is_favorite: isFav } : v);
                 }
                 return oldData;
             });

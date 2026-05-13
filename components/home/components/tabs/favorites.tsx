@@ -3,7 +3,7 @@ import { useAddFavorite, useFavorites, usePayVideo, useUserTokenData } from '@/c
 import { Favorites, Videos } from '@/components/home/interfaces';
 import { AntDesign } from '@expo/vector-icons';
 import { Image } from 'expo-image';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 
 const BASE_URL = process.env.EXPO_PUBLIC_SERVER_URL ?? '';
@@ -13,7 +13,7 @@ export const FavoritesTab = () => {
     const { mutate: payVideo } = usePayVideo();
     const { data: userData } = useUserTokenData();
     const { mutate: addFavorite } = useAddFavorite();
-    const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
+    const [selectedVideo, setSelectedVideo] = useState<Videos | null>(null);
 
     const handlePurchase = (video: Videos) => {
         const userTokens = userData?.tokens ?? 0;
@@ -41,6 +41,12 @@ export const FavoritesTab = () => {
 
     // Aplanar páginas y filtrar items undefined/null de forma segura
     const favorites: Favorites[] = data?.pages.flat().filter((item): item is Favorites => item != null) ?? [];
+
+    const currentSelectedVideo = useMemo(() => {
+        if (!selectedVideo) return null;
+        const found = favorites.find(f => f.video_details?.id === selectedVideo.id);
+        return found?.video_details || selectedVideo;
+    }, [selectedVideo, favorites]);
 
     const onEndReached = useCallback(() => {
         if (hasNextPage && !isFetchingNextPage) {
@@ -78,7 +84,7 @@ export const FavoritesTab = () => {
                 className="mb-6 px-4"
                 onPress={() => {
                     if (isPurchased) {
-                        videoPath ? setSelectedVideo(videoPath) : null;
+                        videoPath ? setSelectedVideo(video) : null;
                     } else {
                         handlePurchase(video);
                     }
@@ -151,9 +157,9 @@ export const FavoritesTab = () => {
                     </View>
                 }
             />
-            {selectedVideo && (
+            {currentSelectedVideo && (
                 <PlayVideo
-                    videoPath={selectedVideo}
+                    video={currentSelectedVideo}
                     onClose={() => setSelectedVideo(null)}
                 />
             )}
