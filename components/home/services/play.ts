@@ -1,4 +1,4 @@
-import { Videos } from "../interfaces";
+import { Comments, PostComment, Videos } from "../interfaces";
 
 export const getVideos = async (page: number = 1, serie: number, token: string | null = null): Promise<Videos[]> => {
     const baseUrl = process.env.EXPO_PUBLIC_SERVER_URL;
@@ -87,6 +87,51 @@ export const postPayVideo = async (videoId: string, token: string | null = null)
     const response = await fetch(`${baseUrl}/api/videos/${videoId}/unlock/`, {
         method: 'POST',
         headers,
+    });
+
+    if (!response.ok) {
+        throw { status: response.status };
+    }
+
+    const data = await response.json();
+    return data;
+};
+
+export const getComments = async (videoId: string, token: string | null = null): Promise<Comments[]> => {
+    const baseUrl = process.env.EXPO_PUBLIC_SERVER_URL;
+    const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+    };
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`${baseUrl}/api/comments/?video_id=${videoId}`, {
+        method: 'GET',
+        headers
+    });
+
+    if (!response.ok) {
+        throw { status: response.status };
+    }
+
+    const data = await response.json();
+    return data;
+};
+
+export const postCommentService = async (comment: PostComment, token: string | null = null): Promise<Comments> => {
+    const baseUrl = process.env.EXPO_PUBLIC_SERVER_URL;
+    const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+    };
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`${baseUrl}/api/comments/`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(comment)
     });
 
     if (!response.ok) {

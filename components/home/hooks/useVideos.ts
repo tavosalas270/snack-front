@@ -1,7 +1,7 @@
 import { useLoginContext } from '@/components/signUpLogin/context';
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { UserTokenData, Videos } from '../interfaces';
-import { getPurchases, getUserTokenData, getVideos, postPayVideo } from '../services';
+import { Comments, PostComment, UserTokenData, Videos } from '../interfaces';
+import { getComments, getPurchases, getUserTokenData, getVideos, postCommentService, postPayVideo } from '../services';
 
 export const useVideos = (serie: number, initialPage: number = 1, enabled: boolean = true) => {
     const { accessToken } = useLoginContext();
@@ -73,5 +73,59 @@ export const useUserTokenData = () => {
             }
         },
         enabled: !!accessToken,
+    });
+};
+
+export const useComments = (videoId: string) => {
+    const { accessToken } = useLoginContext();
+
+    return useQuery({
+        queryKey: ['comments', videoId, accessToken],
+        queryFn: () => getComments(videoId, accessToken),
+        enabled: !!videoId,
+        select: (data) => {
+            if (!data) return [];
+            const replyIds = new Set<number>();
+            data.forEach(comment => {
+                if (comment.replies && Array.isArray(comment.replies)) {
+                    comment.replies.forEach(reply => {
+                        replyIds.add(reply.id);
+                    });
+                }
+            });
+            return data.filter(comment => !replyIds.has(comment.id));
+        }
+    });
+};
+
+
+export const usePostComment = () => {
+    const queryClient = useQueryClient();
+    const { accessToken } = useLoginContext();
+
+    return useMutation({
+        mutationFn: (comment: PostComment) => postCommentService(comment, accessToken),
+        onSuccess: (newComment) => {
+            const videoId = newComment.video;
+            queryClient.setQueryData(['comments', videoId], (oldComments: Comments[] | undefined) => {
+                if (!oldComments) return [newComment];
+
+                if (newComment.parent) {
+                    return oldComments.map(comment => {
+                        if (comment.id === newComment.parent) {
+                            return {
+                                ...comment,
+                                replies_count: (comment.replies_count || 0) + 1,
+                                replies: [...(comment.replies || []), newComment]
+                            };
+                        }
+                        return comment;
+                    });
+                } else {
+                    return [newComment, ...oldComments];
+                }
+            });
+            queryClient.invalidateQueries({ queryKey: ['comments', videoId, accessToken] });
+        }
     });
 };
