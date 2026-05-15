@@ -154,7 +154,7 @@ export const PlayVideo = ({ video, onClose }: PlayVideoProps) => {
                 onRequestClose={() => setCommentsModalVisible(false)}
             >
                 <KeyboardAvoidingView 
-                    behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+                    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                     style={{ flex: 1 }}
                 >
                     <View className="flex-1 justify-end">
@@ -190,28 +190,6 @@ export const PlayVideo = ({ video, onClose }: PlayVideoProps) => {
                                     </Pressable>
                                 </View>
 
-                                {/* Main comment input */}
-                                <View className="flex-row items-center bg-[#2A2A2A] rounded-2xl px-4 py-1.5 mb-6 border border-gray-700">
-                                    <TextInput
-                                        placeholder="Añadir comentario..."
-                                        placeholderTextColor="#888"
-                                        style={{ flex: 1, color: 'white', fontSize: 13, minHeight: 36 }}
-                                        value={newCommentText}
-                                        onChangeText={setNewCommentText}
-                                        multiline
-                                    />
-                                    <Pressable
-                                        onPress={handleSendMainComment}
-                                        disabled={isPosting || !newCommentText.trim()}
-                                        className="ml-3 w-8 h-8 rounded-full bg-[#BF0FB4] items-center justify-center"
-                                    >
-                                        {isPosting ? (
-                                            <ActivityIndicator size="small" color="white" />
-                                        ) : (
-                                            <Ionicons name="arrow-up" size={18} color="white" />
-                                        )}
-                                    </Pressable>
-                                </View>
 
                                 {/* Comments List */}
                                 {isLoadingComments ? (
@@ -292,6 +270,31 @@ export const PlayVideo = ({ video, onClose }: PlayVideoProps) => {
                                     </View>
                                 )}
                             </ScrollView>
+
+                            {/* Main comment input - Fixed at bottom */}
+                            <View className="px-5 py-4 bg-[#1A1A1A] border-t border-gray-800">
+                                <View className="flex-row items-center bg-[#2A2A2A] rounded-2xl px-4 py-1.5 border border-gray-700">
+                                    <TextInput
+                                        placeholder="Añadir comentario..."
+                                        placeholderTextColor="#888"
+                                        style={{ flex: 1, color: 'white', fontSize: 13, minHeight: 36 }}
+                                        value={newCommentText}
+                                        onChangeText={setNewCommentText}
+                                        multiline
+                                    />
+                                    <Pressable
+                                        onPress={handleSendMainComment}
+                                        disabled={isPosting || !newCommentText.trim()}
+                                        className="ml-3 w-8 h-8 rounded-full bg-[#BF0FB4] items-center justify-center"
+                                    >
+                                        {isPosting ? (
+                                            <ActivityIndicator size="small" color="white" />
+                                        ) : (
+                                            <Ionicons name="arrow-up" size={18} color="white" />
+                                        )}
+                                    </Pressable>
+                                </View>
+                            </View>
                         </View>
                     </View>
                 </KeyboardAvoidingView>
