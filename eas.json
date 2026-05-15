@@ -14,12 +14,19 @@
         "buildType": "apk"
       },
       "env": {
-        "EXPO_PUBLIC_SERVER_URL": "https://b827-186-118-43-121.ngrok-free.app/",
+        "EXPO_PUBLIC_SERVER_URL": "https://snakapp.co",
         "EXPO_PUBLIC_APP_ENV": "preview"
       }
     },
     "production": {
-      "autoIncrement": true
+      "autoIncrement": true,
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_SERVER_URL": "https://snakapp.co",
+        "EXPO_PUBLIC_APP_ENV": "production"
+      }
     }
   },
   "submit": {

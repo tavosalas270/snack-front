@@ -1,5 +1,4 @@
-import { WatchTab } from '@/components/home/components/tabs/watch';
-import { FavoritesTab } from '@/components/home/components/tabs/favorites';
+import { WatchTab, FavoritesTab, ComingSoonTab } from '@/components/home/components/tabs';
 import { useUserTokenData } from '@/components/home/hooks';
 import { AntDesign } from '@expo/vector-icons';
 import { Image } from 'expo-image';
@@ -18,7 +17,7 @@ const renderContent = (tab: Tab) => {
         case 'FAVORITES':
             return <FavoritesTab />;
         default:
-            return <View style={styles.empty} />;
+            return <ComingSoonTab />;
     }
 };
 
