@@ -17,7 +17,7 @@ interface SignUpLoginContextProps {
 const SignUpLoginContext = createContext<SignUpLoginContextProps | undefined>(undefined);
 
 export function SignUpLoginProvider({ children }: { children: ReactNode }) {
-  const [tabSelected, setTabSelected] = useState<'login' | 'sign'>('login');
+  const [tabSelected, setTabSelected] = useState<'login' | 'sign'>('sign');
   const [subSectionSelected, setSubSectionSelected] = useState<SubSectionType>('create');
   const [linkEmailData, setLinkEmailData] = useState<LinkEmailData>({
     email: '',

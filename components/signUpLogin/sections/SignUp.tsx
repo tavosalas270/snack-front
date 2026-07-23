@@ -1,5 +1,5 @@
 import { AntDesign } from '@expo/vector-icons';
-import { Pressable, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { SignUpButton } from '../components';
 import { useSignUpContext } from '../context';
 import { Create, LinkEmail, SetCredentials, VerifyCode } from '../subSections';
@@ -83,6 +83,11 @@ export default function SignUp() {
               title="CONTINUE"
               onPress={() => setSubSectionSelected("link")}
             />
+            <Text className="text-white font-jost-bold text-center mt-3 text-sm">
+              ¡¡Regístrate, recibirás{" "}
+              <Text style={{ color: "#FFD700" }}>10.000</Text>
+              {" "}coins de una!!
+            </Text>
           </View>
         </Create>
       )}
