@@ -25,17 +25,24 @@ export const unstable_settings = {
 };
 
 function InitialLayout() {
-  const { accessToken } = useLoginContext();
+  const { accessToken, isLoadingAuth } = useLoginContext();
   const segments = useSegments();
   const router = useRouter();
 
   useEffect(() => {
-    const inWatchGroup = segments.length > 0 && segments[0] === 'home';
+    if (isLoadingAuth) return; // Esperar a que el storage seguro termine de leer
 
-    if (!accessToken && inWatchGroup) {
+    const inAuthGroup = segments.length > 0 && segments[0] === 'signUpLogin';
+    const inHomeGroup = segments.length > 0 && segments[0] === 'home';
+
+    if (!accessToken && inHomeGroup) {
+      // Si no hay token y quiere entrar a contenido protegido, lo mandamos a login
       router.replace('/signUpLogin');
+    } else if (accessToken && (!segments.length || inAuthGroup)) {
+      // Si ya hay token y está en el login o raíz, lo auto-logeamos a la vista principal
+      router.replace('/home');
     }
-  }, [accessToken, segments]);
+  }, [accessToken, segments, isLoadingAuth]);
 
   return (
     <Stack screenOptions={{ headerShown: false }}>
