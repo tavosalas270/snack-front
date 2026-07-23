@@ -1,4 +1,5 @@
 import { useLoginContext } from '@/components/signUpLogin/context';
+import { trackPixelEvent } from '@/utils/analytics';
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Categories, Favorites, Series, Videos } from '../interfaces';
 import { addFavorite, getCategories, getFavorites, getSeries, postLikeVideo, searchVideos } from '../services';
@@ -84,10 +85,19 @@ export const useLikeVideo = () => {
     const { accessToken } = useLoginContext();
 
     return useMutation({
-        mutationFn: (videoId: string) => postLikeVideo(videoId, accessToken),
-        onSuccess: (response, videoId) => {
+        mutationFn: ({ id }: { id: string; title: string }) => postLikeVideo(id, accessToken),
+        onSuccess: (response, { id, title }) => {
             const isLiked = response.status === 'liked';
             const likeDiff = isLiked ? 1 : -1;
+
+            // Disparar evento de pixel solo si es un Like (y no un Unlike)
+            if (isLiked) {
+                trackPixelEvent('both', 'LikeVideo', {
+                    content_name: title,
+                    content_id: id,
+                    content_type: 'video',
+                });
+            }
 
             // Actualizar caché de series
             queryClient.setQueriesData({ queryKey: ['series'] }, (oldData: any) => {
@@ -98,7 +108,7 @@ export const useLikeVideo = () => {
                         page.map(serie => ({
                             ...serie,
                             videos: serie.videos.map(v => {
-                                if (v.id.toString() === videoId.toString()) {
+                                if (v.id.toString() === id) {
                                     // Evitar duplicar la operación si el estado ya coincide
                                     if (v.user_has_liked === isLiked) return v;
                                     return {
@@ -121,7 +131,7 @@ export const useLikeVideo = () => {
                     ...oldData,
                     pages: oldData.pages.map((page: Videos[]) =>
                         page.map(v => {
-                            if (v.id.toString() === videoId.toString()) {
+                            if (v.id.toString() === id) {
                                 if (v.user_has_liked === isLiked) return v;
                                 return {
                                     ...v,
@@ -142,7 +152,7 @@ export const useLikeVideo = () => {
                     ...oldData,
                     pages: oldData.pages.map((page: Favorites[]) =>
                         page.map(fav => {
-                            if (fav.video_details?.id.toString() === videoId.toString()) {
+                            if (fav.video_details?.id.toString() === id) {
                                 if (fav.video_details.user_has_liked === isLiked) return fav;
                                 return {
                                     ...fav,
@@ -164,7 +174,7 @@ export const useLikeVideo = () => {
                 if (!oldData) return oldData;
                 if (Array.isArray(oldData)) {
                     return oldData.map((v: Videos) => {
-                        if (v.id.toString() === videoId.toString()) {
+                        if (v.id.toString() === id.toString()) {
                             if (v.user_has_liked === isLiked) return v;
                             return {
                                 ...v,
@@ -191,9 +201,17 @@ export const useAddFavorite = () => {
     const { accessToken } = useLoginContext();
 
     return useMutation({
-        mutationFn: (video: string) => addFavorite(video, accessToken),
-        onSuccess: (response, videoId) => {
+        mutationFn: ({ id }: { id: string; title: string }) => addFavorite(id, accessToken),
+        onSuccess: (response, { id, title }) => {
             const isFav = response.is_favorite;
+
+            if (isFav) {
+                trackPixelEvent('both', 'AddToWishlist', {
+                    content_name: title,
+                    content_id: id,
+                    content_type: 'video',
+                });
+            }
 
             // Actualizar caché de series
             queryClient.setQueriesData({ queryKey: ['series'] }, (oldData: any) => {
@@ -203,7 +221,7 @@ export const useAddFavorite = () => {
                     pages: oldData.pages.map((page: Series[]) =>
                         page.map((serie: Series) => ({
                             ...serie,
-                            videos: serie.videos?.map((v: Videos) => v.id.toString() === videoId.toString() ? { ...v, is_favorite: isFav } : v)
+                            videos: serie.videos?.map((v: Videos) => v.id.toString() === id.toString() ? { ...v, is_favorite: isFav } : v)
                         }))
                     )
                 };
@@ -215,7 +233,7 @@ export const useAddFavorite = () => {
                 return {
                     ...oldData,
                     pages: oldData.pages.map((page: Videos[]) =>
-                        page.map((v: Videos) => v.id.toString() === videoId.toString() ? { ...v, is_favorite: isFav } : v)
+                        page.map((v: Videos) => v.id.toString() === v.id.toString() ? { ...v, is_favorite: isFav } : v)
                     )
                 };
             });
@@ -224,7 +242,7 @@ export const useAddFavorite = () => {
             queryClient.setQueriesData({ queryKey: ['searchVideos'] }, (oldData: any) => {
                 if (!oldData) return oldData;
                 if (Array.isArray(oldData)) {
-                    return oldData.map((v: Videos) => v.id.toString() === videoId.toString() ? { ...v, is_favorite: isFav } : v);
+                    return oldData.map((v: Videos) => v.id.toString() === id.toString() ? { ...v, is_favorite: isFav } : v);
                 }
                 return oldData;
             });

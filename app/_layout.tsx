@@ -1,3 +1,5 @@
+import PixelWebView from '@/components/analytics/PixelWebView';
+import { analyticsPixelRef } from '@/utils/analytics';
 import { LoginProvider, useLoginContext } from '@/components/signUpLogin/context';
 import { CherryBombOne_400Regular, useFonts } from '@expo-google-fonts/cherry-bomb-one';
 import { Jost_400Regular, Jost_700Bold } from '@expo-google-fonts/jost';
@@ -87,6 +89,8 @@ export default function RootLayout() {
           <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
             <LoginProvider>
               <InitialLayout />
+              {/* WebView oculta para inyectar eventos de Meta/TikTok */}
+              <PixelWebView ref={analyticsPixelRef} />
             </LoginProvider>
             <StatusBar style="auto" />
           </ThemeProvider>

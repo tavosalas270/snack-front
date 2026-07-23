@@ -33,7 +33,7 @@ export const FavoritesTab = () => {
                 { text: "No", style: "cancel" },
                 {
                     text: "Si",
-                    onPress: () => payVideo(video.id.toString())
+                    onPress: () => payVideo({ id: video.id.toString(), title: video.title || '' })
                 }
             ]
         );
@@ -102,7 +102,7 @@ export const FavoritesTab = () => {
                     )}
                     <View className="absolute inset-0 bg-gradient-to-b from-transparent from-40% to-black/85" />
                     <Pressable
-                        onPress={() => addFavorite(video.id.toString())}
+                        onPress={() => addFavorite({ id: video.id.toString(), title: video.title || '' })}
                         style={styles.favoriteButton}
                         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                     >

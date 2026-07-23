@@ -1,3 +1,4 @@
+import { trackPixelEvent } from '@/utils/analytics';
 import { useLoginContext } from '@/components/signUpLogin/context';
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Comments, PostComment, UserTokenData, Videos } from '../interfaces';
@@ -31,8 +32,15 @@ export const usePayVideo = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (videoId: string) => postPayVideo(videoId, accessToken),
-        onSuccess: () => {
+        mutationFn: ({ id }: { id: string; title: string }) => postPayVideo(id, accessToken),
+        onSuccess: (_, { id, title }) => {
+            // Disparar evento de Purchase cuando el video se compre exitosamente
+            trackPixelEvent('both', 'Purchase', {
+                content_name: title,
+                content_id: id,
+                content_type: 'video',
+            });
+
             queryClient.invalidateQueries({ queryKey: ['userTokenData'] });
             queryClient.invalidateQueries({ queryKey: ['series'] });
             queryClient.invalidateQueries({ queryKey: ['videos'] });
@@ -107,6 +115,15 @@ export const usePostComment = () => {
         mutationFn: (comment: PostComment) => postCommentService(comment, accessToken),
         onSuccess: (newComment) => {
             const videoId = newComment.video;
+
+            // Enviar evento de Pixel al publicar comentario
+            trackPixelEvent('both', 'PostComment', {
+                content_id: videoId.toString(),
+                content_type: 'video',
+                comment_text: newComment.content,
+                is_reply: !!newComment.parent
+            });
+
             queryClient.setQueryData(['comments', videoId], (oldComments: Comments[] | undefined) => {
                 if (!oldComments) return [newComment];
 

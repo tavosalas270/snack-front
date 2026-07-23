@@ -115,7 +115,7 @@ const SeriesCard = ({ item, onVideoSelect, onPurchase }: { item: Series; onVideo
                                     onPurchase(video);
                                 }
                             }}
-                            onFavorite={() => addFavorite(video.id.toString())}
+                            onFavorite={() => addFavorite({ id: video.id.toString(), title: video.title })}
                         />
                     )}
                     onEndReached={onEndReached}
@@ -170,7 +170,7 @@ export const WatchTab = () => {
                 { text: "No", style: "cancel" },
                 {
                     text: "Si",
-                    onPress: () => payVideo(video.id.toString())
+                    onPress: () => payVideo({ id: video.id.toString(), title: video.title })
                 }
             ]
         );

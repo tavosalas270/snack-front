@@ -1,10 +1,16 @@
 import { useComments, useLikeVideo, usePostComment, useUserTokenData } from '@/components/home/hooks';
 import { Videos } from '@/components/home/interfaces';
+import { trackPixelEvent } from '@/utils/analytics';
 import { AntDesign, Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import React, { useRef, useState } from 'react';
 import { ActivityIndicator, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+
+interface PlayVideoProps {
+    video: Videos;
+    onClose: () => void;
+}
 
 const BASE_URL = process.env.EXPO_PUBLIC_SERVER_URL ?? '';
 
@@ -18,15 +24,10 @@ const getAvatarUri = (avatar: string | null | undefined) => {
     return `${BASE_URL}/media/${cleanAvatar}`;
 };
 
-interface PlayVideoProps {
-    video: Videos;
-    onClose: () => void;
-}
-
 export const PlayVideo = ({ video, onClose }: PlayVideoProps) => {
     // Construir la URL completa del video usando la misma lógica de los thumbnails
     const videoPath = video?.video_path || video?.video_file || '';
-    const videoUri = `${BASE_URL}/media/${videoPath}`;
+    const videoUri = `${BASE_URL}/media/protected_media/${videoPath}`;
     const videoViewRef = useRef<VideoView>(null);
 
     const { mutate: likeVideo } = useLikeVideo();
@@ -37,6 +38,18 @@ export const PlayVideo = ({ video, onClose }: PlayVideoProps) => {
     const [commentsModalVisible, setCommentsModalVisible] = useState(false);
     const [newCommentText, setNewCommentText] = useState('');
     const [replyTexts, setReplyTexts] = useState<Record<number, string>>({});
+
+    // Registrar evento de visualización del video
+    React.useEffect(() => {
+        if (video?.id) {
+            trackPixelEvent('both', 'ViewContent', {
+                content_name: video.title || 'Video Playback',
+                content_id: video.id.toString(),
+                content_type: 'video',
+                user_id: userData?.id
+            });
+        }
+    }, [video?.id, userData?.id]);
 
     // Inicializamos el video player. Automáticamente se le indica hacer play.
     const player = useVideoPlayer(videoUri, (p) => {
@@ -79,10 +92,10 @@ export const PlayVideo = ({ video, onClose }: PlayVideoProps) => {
 
     return (
         <View style={StyleSheet.absoluteFill} className="bg-black z-50">
-            <VideoView 
+            <VideoView
                 ref={videoViewRef}
-                style={StyleSheet.absoluteFill} 
-                player={player} 
+                style={StyleSheet.absoluteFill}
+                player={player}
                 fullscreenOptions={{ enable: true }}
                 allowsPictureInPicture={false}
                 nativeControls={true}
@@ -91,8 +104,8 @@ export const PlayVideo = ({ video, onClose }: PlayVideoProps) => {
             />
 
             {/* Botón superior de cierre para vista inline */}
-            <Pressable 
-                onPress={onClose} 
+            <Pressable
+                onPress={onClose}
                 style={styles.closeButton}
                 hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
             >
@@ -105,7 +118,7 @@ export const PlayVideo = ({ video, onClose }: PlayVideoProps) => {
                 <Pressable
                     onPress={() => {
                         if (video?.id) {
-                            likeVideo(video.id.toString());
+                            likeVideo({ id: video.id.toString(), title: video.title });
                         }
                     }}
                     style={({ pressed }) => [
@@ -114,10 +127,10 @@ export const PlayVideo = ({ video, onClose }: PlayVideoProps) => {
                     ]}
                     hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
                 >
-                    <AntDesign 
-                        name="heart" 
-                        size={35} 
-                        color={hasLiked ? '#BF0FB4' : 'white'} 
+                    <AntDesign
+                        name="heart"
+                        size={35}
+                        color={hasLiked ? '#BF0FB4' : 'white'}
                         style={styles.iconShadow}
                     />
                 </Pressable>
@@ -134,10 +147,10 @@ export const PlayVideo = ({ video, onClose }: PlayVideoProps) => {
                     ]}
                     hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
                 >
-                    <Ionicons 
-                        name="chatbubble-ellipses-outline" 
-                        size={33} 
-                        color="white" 
+                    <Ionicons
+                        name="chatbubble-ellipses-outline"
+                        size={33}
+                        color="white"
                         style={styles.iconShadow}
                     />
                 </Pressable>
@@ -153,7 +166,7 @@ export const PlayVideo = ({ video, onClose }: PlayVideoProps) => {
                 visible={commentsModalVisible}
                 onRequestClose={() => setCommentsModalVisible(false)}
             >
-                <KeyboardAvoidingView 
+                <KeyboardAvoidingView
                     behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                     style={{ flex: 1 }}
                 >
@@ -171,8 +184,8 @@ export const PlayVideo = ({ video, onClose }: PlayVideoProps) => {
                                 <View className="w-12 h-1 bg-gray-600 rounded-full" />
                             </View>
 
-                            <ScrollView 
-                                className="px-5 pb-8" 
+                            <ScrollView
+                                className="px-5 pb-8"
                                 showsVerticalScrollIndicator={false}
                                 keyboardShouldPersistTaps="handled"
                             >
