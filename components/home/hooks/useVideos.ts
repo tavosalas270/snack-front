@@ -1,8 +1,9 @@
-import { trackPixelEvent } from '@/utils/analytics';
 import { useLoginContext } from '@/components/signUpLogin/context';
+import { trackPixelEvent } from '@/utils/analytics';
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useEffect } from 'react';
 import { Comments, PostComment, UserTokenData, Videos } from '../interfaces';
-import { getComments, getPurchases, getUserTokenData, getVideos, postCommentService, postPayVideo } from '../services';
+import { getComments, getPurchases, getUserTokenData, getVideoPlayUrl, getVideos, postCommentService, postPayVideo } from '../services';
 
 export const useVideos = (serie: number, initialPage: number = 1, enabled: boolean = true) => {
     const { accessToken } = useLoginContext();
@@ -145,4 +146,28 @@ export const usePostComment = () => {
             queryClient.invalidateQueries({ queryKey: ['comments', videoId, accessToken] });
         }
     });
+};
+
+export const useVideoPlay = (video: Videos | undefined | null, userId?: string | number) => {
+    const { accessToken } = useLoginContext();
+    const videoId = video?.id?.toString() ?? '';
+
+    const query = useQuery({
+        queryKey: ['videoPlay', videoId, accessToken],
+        queryFn: () => getVideoPlayUrl(videoId, accessToken),
+        enabled: !!videoId,
+    });
+
+    useEffect(() => {
+        if (query.isSuccess && query.data) {
+            trackPixelEvent('both', 'ViewContent', {
+                content_name: query.data.title || 'Video Playback',
+                content_id: query.data.id,
+                content_type: 'video',
+                user_id: userId
+            });
+        }
+    }, [query.isSuccess, query.data, userId]);
+
+    return query;
 };

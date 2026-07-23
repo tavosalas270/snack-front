@@ -1,6 +1,6 @@
 import { forwardRef } from "react";
 import { StyleSheet, View } from "react-native";
-import WebView, { WebViewMessageEvent } from "react-native-webview";
+import WebView from "react-native-webview";
 
 const META_PIXEL_ID = process.env.EXPO_PUBLIC_META_PIXEL_ID ?? "";
 const TIKTOK_PIXEL_ID = process.env.EXPO_PUBLIC_TIKTOK_PIXEL_ID ?? "";
@@ -80,10 +80,6 @@ const PIXEL_HTML = `
  *   `);
  */
 const PixelWebView = forwardRef<any, any>((props, ref) => {
-  const handleMessage = (event: WebViewMessageEvent) => {
-    // Por si necesitamos recibir mensajes desde la WebView en el futuro
-    console.log("[PixelWebView]", event.nativeEvent.data);
-  };
 
   return (
     <View style={styles.container} pointerEvents="none">
@@ -93,7 +89,6 @@ const PixelWebView = forwardRef<any, any>((props, ref) => {
         style={styles.hidden}
         containerStyle={styles.hidden}
         javaScriptEnabled
-        onMessage={handleMessage}
         // Permite peticiones a dominios externos (Meta, TikTok)
         mixedContentMode="always"
         originWhitelist={["*"]}

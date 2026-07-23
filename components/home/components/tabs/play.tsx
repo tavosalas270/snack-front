@@ -1,6 +1,6 @@
-import { useComments, useLikeVideo, usePostComment, useUserTokenData } from '@/components/home/hooks';
+import { useComments, useLikeVideo, usePostComment, useUserTokenData, useVideoPlay } from '@/components/home/hooks';
 import { Videos } from '@/components/home/interfaces';
-import { trackPixelEvent } from '@/utils/analytics';
+import { useLoginContext } from '@/components/signUpLogin/context';
 import { AntDesign, Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { useVideoPlayer, VideoView } from 'expo-video';
@@ -25,37 +25,48 @@ const getAvatarUri = (avatar: string | null | undefined) => {
 };
 
 export const PlayVideo = ({ video, onClose }: PlayVideoProps) => {
-    // Construir la URL completa del video usando la misma lógica de los thumbnails
-    const videoPath = video?.video_path || video?.video_file || '';
-    const videoUri = `${BASE_URL}/media/protected_media/${videoPath}`;
     const videoViewRef = useRef<VideoView>(null);
 
     const { mutate: likeVideo } = useLikeVideo();
     const { data: comments = [], isLoading: isLoadingComments } = useComments(video?.id?.toString() ?? '');
     const { mutate: postComment, isPending: isPosting } = usePostComment();
     const { data: userData } = useUserTokenData();
+    const { data: playData, isLoading: isLoadingPlay, isSuccess: isPlayReady } = useVideoPlay(video, userData?.id);
+    const { accessToken } = useLoginContext();
+
+    const videoUri = isPlayReady && playData?.video_path ? `${BASE_URL}${playData.video_path}` : null;
+
+    const videoSource = React.useMemo(() => {
+        if (!videoUri) return null;
+        return {
+            uri: videoUri,
+            headers: {
+                Authorization: `Bearer ${accessToken}`
+            }
+        };
+    }, [videoUri, accessToken]);
 
     const [commentsModalVisible, setCommentsModalVisible] = useState(false);
     const [newCommentText, setNewCommentText] = useState('');
     const [replyTexts, setReplyTexts] = useState<Record<number, string>>({});
 
-    // Registrar evento de visualización del video
-    React.useEffect(() => {
-        if (video?.id) {
-            trackPixelEvent('both', 'ViewContent', {
-                content_name: video.title || 'Video Playback',
-                content_id: video.id.toString(),
-                content_type: 'video',
-                user_id: userData?.id
-            });
-        }
-    }, [video?.id, userData?.id]);
-
-    // Inicializamos el video player. Automáticamente se le indica hacer play.
-    const player = useVideoPlayer(videoUri, (p) => {
+    // Inicializamos el video player.
+    const player = useVideoPlayer(videoSource, (p) => {
         p.loop = false;
         p.play();
     });
+
+    // Escuchamos cambios de estado para ver si hay errores (ej: 401 por el token)
+    React.useEffect(() => {
+        const subscription = player.addListener('statusChange', (event) => {
+            if (event.status === 'error') {
+                console.error("Error reproduciendo el video:", event.error);
+            }
+        });
+        return () => {
+            subscription.remove();
+        };
+    }, [player]);
 
     const hasLiked = video?.user_has_liked ?? false;
     const likesCount = video?.likes_count ?? 0;
@@ -92,16 +103,22 @@ export const PlayVideo = ({ video, onClose }: PlayVideoProps) => {
 
     return (
         <View style={StyleSheet.absoluteFill} className="bg-black z-50">
-            <VideoView
-                ref={videoViewRef}
-                style={StyleSheet.absoluteFill}
-                player={player}
-                fullscreenOptions={{ enable: true }}
-                allowsPictureInPicture={false}
-                nativeControls={true}
-                // Al salir de la pantalla completa nativa, cerramos nuestra vista.
-                onFullscreenExit={onClose}
-            />
+            {isLoadingPlay ? (
+                <View style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'center' }]}>
+                    <ActivityIndicator size="large" color="#BF0FB4" />
+                </View>
+            ) : (
+                <VideoView
+                    ref={videoViewRef}
+                    style={StyleSheet.absoluteFill}
+                    player={player}
+                    fullscreenOptions={{ enable: true }}
+                    allowsPictureInPicture={false}
+                    nativeControls={true}
+                    // Al salir de la pantalla completa nativa, cerramos nuestra vista.
+                    onFullscreenExit={onClose}
+                />
+            )}
 
             {/* Botón superior de cierre para vista inline */}
             <Pressable
