@@ -1,15 +1,13 @@
 import { AddFavoriteResponse, Categories, Favorites, LikeVideoResponse, Series, UserTokenData } from "../interfaces";
+import { fetchWithAuth } from "@/utils/fetchWithAuth";
 
 export const getUserTokenData = async (token: string | null = null): Promise<UserTokenData> => {
     const baseUrl = process.env.EXPO_PUBLIC_SERVER_URL;
     const headers: Record<string, string> = {
         'Content-Type': 'application/json',
     };
-    if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-    }
 
-    const response = await fetch(`${baseUrl}/api/users/me/`, {
+    const response = await fetchWithAuth(`${baseUrl}/api/users/me/`, {
         method: 'GET',
         headers,
     });
@@ -27,11 +25,8 @@ export const getSeries = async (page: number = 1, token: string | null = null): 
     const headers: Record<string, string> = {
         'Content-Type': 'application/json',
     };
-    if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-    }
 
-    const response = await fetch(`${baseUrl}/api/series/?page=${page}`, {
+    const response = await fetchWithAuth(`${baseUrl}/api/series/?page=${page}`, {
         method: 'GET',
         headers,
     });
@@ -66,11 +61,8 @@ export const getFavorites = async (page: number = 1, token: string | null = null
     const headers: Record<string, string> = {
         'Content-Type': 'application/json',
     };
-    if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-    }
 
-    const response = await fetch(`${baseUrl}/api/favorites/?page=${page}`, {
+    const response = await fetchWithAuth(`${baseUrl}/api/favorites/?page=${page}`, {
         method: 'GET',
         headers,
     });
@@ -88,11 +80,8 @@ export const addFavorite = async (video: string, token: string | null = null): P
     const headers: Record<string, string> = {
         'Content-Type': 'application/json',
     };
-    if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-    }
 
-    const response = await fetch(`${baseUrl}/api/favorites/`, {
+    const response = await fetchWithAuth(`${baseUrl}/api/favorites/`, {
         method: 'POST',
         headers,
         body: JSON.stringify({
@@ -112,11 +101,8 @@ export const postLikeVideo = async (videoId: string, token: string | null = null
     const headers: Record<string, string> = {
         'Content-Type': 'application/json',
     };
-    if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-    }
 
-    const response = await fetch(`${baseUrl}/api/video-interactions/toggle-like/`, {
+    const response = await fetchWithAuth(`${baseUrl}/api/video-interactions/toggle-like/`, {
         method: 'POST',
         headers,
         body: JSON.stringify({

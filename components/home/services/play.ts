@@ -1,15 +1,13 @@
 import { Comments, PostComment, Videos } from "../interfaces";
+import { fetchWithAuth } from "@/utils/fetchWithAuth";
 
 export const getVideos = async (page: number = 1, serie: number, token: string | null = null): Promise<Videos[]> => {
     const baseUrl = process.env.EXPO_PUBLIC_SERVER_URL;
     const headers: Record<string, string> = {
         'Content-Type': 'application/json',
     };
-    if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-    }
 
-    const response = await fetch(`${baseUrl}/api/videos/?page=${page}&serie=${serie}`, {
+    const response = await fetchWithAuth(`${baseUrl}/api/videos/?page=${page}&serie=${serie}`, {
         method: 'GET',
         headers,
     });
@@ -28,11 +26,8 @@ export const getPurchases = async (token: string): Promise<Videos[]> => {
     const headers: Record<string, string> = {
         'Content-Type': 'application/json',
     };
-    if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-    }
 
-    const response = await fetch(`${baseUrl}/api/videos/my-purchases/`, {
+    const response = await fetchWithAuth(`${baseUrl}/api/videos/my-purchases/`, {
         method: 'GET',
         headers,
     });
@@ -58,11 +53,8 @@ export const searchVideos = async (query: string, category?: string, token: stri
     const headers: Record<string, string> = {
         'Content-Type': 'application/json',
     };
-    if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-    }
 
-    const response = await fetch(url, {
+    const response = await fetchWithAuth(url, {
         method: 'GET',
         headers,
     });
@@ -80,11 +72,8 @@ export const postPayVideo = async (videoId: string, token: string | null = null)
     const headers: Record<string, string> = {
         'Content-Type': 'application/json',
     };
-    if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-    }
 
-    const response = await fetch(`${baseUrl}/api/videos/${videoId}/unlock/`, {
+    const response = await fetchWithAuth(`${baseUrl}/api/videos/${videoId}/unlock/`, {
         method: 'POST',
         headers,
     });
@@ -102,11 +91,8 @@ export const getComments = async (videoId: string, token: string | null = null):
     const headers: Record<string, string> = {
         'Content-Type': 'application/json',
     };
-    if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-    }
 
-    const response = await fetch(`${baseUrl}/api/comments/?video_id=${videoId}`, {
+    const response = await fetchWithAuth(`${baseUrl}/api/comments/?video_id=${videoId}`, {
         method: 'GET',
         headers
     });
@@ -124,11 +110,8 @@ export const getVideoPlayUrl = async (videoId: string, token: string | null = nu
     const headers: Record<string, string> = {
         'Content-Type': 'application/json',
     };
-    if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-    }
 
-    const response = await fetch(`${baseUrl}/api/videos/${videoId}/play/`, {
+    const response = await fetchWithAuth(`${baseUrl}/api/videos/${videoId}/play/`, {
         method: 'GET',
         headers,
     });
@@ -146,11 +129,8 @@ export const postCommentService = async (comment: PostComment, token: string | n
     const headers: Record<string, string> = {
         'Content-Type': 'application/json',
     };
-    if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-    }
 
-    const response = await fetch(`${baseUrl}/api/comments/`, {
+    const response = await fetchWithAuth(`${baseUrl}/api/comments/`, {
         method: 'POST',
         headers,
         body: JSON.stringify(comment)

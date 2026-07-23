@@ -1,5 +1,6 @@
 import { createContext, ReactNode, useContext, useState, useEffect } from 'react';
 import * as SecureStore from 'expo-secure-store';
+import { DeviceEventEmitter } from 'react-native';
 
 interface LoginContextProps {
     accessToken: string | null;
@@ -30,6 +31,23 @@ export function LoginProvider({ children }: { children: ReactNode }) {
             }
         }
         loadTokens();
+
+        // Escuchar eventos globales del interceptor de peticiones (fetchWithAuth)
+        const sub1 = DeviceEventEmitter.addListener('onTokenRefresh', (tokens: { access: string; refresh?: string }) => {
+            setAccessTokenState(tokens.access);
+            if (tokens.refresh) {
+                setRefreshTokenState(tokens.refresh);
+            }
+        });
+        const sub2 = DeviceEventEmitter.addListener('onLogout', () => {
+            setAccessTokenState(null);
+            setRefreshTokenState(null);
+        });
+
+        return () => {
+            sub1.remove();
+            sub2.remove();
+        };
     }, []);
 
     const setAccessToken = async (token: string | null) => {
