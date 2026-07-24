@@ -15,6 +15,9 @@
       },
       "env": {
         "EXPO_PUBLIC_SERVER_URL": "https://snakapp.co",
+        "EXPO_PUBLIC_META_PIXEL_ID": "2520365691740639",
+        "EXPO_PUBLIC_TIKTOK_PIXEL_ID": "https://snakapp.co",
+        "EXPO_PUBLIC_COINS": "10.000",
         "EXPO_PUBLIC_APP_ENV": "preview"
       }
     },
@@ -25,6 +28,9 @@
       },
       "env": {
         "EXPO_PUBLIC_SERVER_URL": "https://snakapp.co",
+        "EXPO_PUBLIC_META_PIXEL_ID": "2520365691740639",
+        "EXPO_PUBLIC_TIKTOK_PIXEL_ID": "D9B64O3C77U10RKAEU6G",
+        "EXPO_PUBLIC_COINS": "10.000",
         "EXPO_PUBLIC_APP_ENV": "production"
       }
     }

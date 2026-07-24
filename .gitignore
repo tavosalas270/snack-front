@@ -43,3 +43,5 @@ app-example
 /android
 
 *.mp4
+
+eas.json
