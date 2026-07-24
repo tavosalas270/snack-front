@@ -6,7 +6,7 @@ import { createRef } from 'react';
  */
 export const analyticsPixelRef = createRef<any>();
 
-type SupportedEvent = 
+type SupportedEvent =
   | 'PageView'
   | 'CompleteRegistration'
   | 'Purchase'
@@ -23,15 +23,13 @@ type SupportedEvent =
  */
 export const trackPixelEvent = (
   platforms: 'meta' | 'tiktok' | 'both',
-  eventName: SupportedEvent | (string & {}), 
+  eventName: SupportedEvent | (string & {}),
   data?: Record<string, any>
 ) => {
   if (!analyticsPixelRef.current) {
     console.warn('[Analytics] PixelWebView ref is not ready. Event missed:', eventName);
     return;
   }
-
-  console.log(`🚀 [Pixel Event] Enviando evento '${eventName}' a [${platforms}]`, data || '');
 
   let script = '';
   const dataString = data ? `, ${JSON.stringify(data)}` : '';

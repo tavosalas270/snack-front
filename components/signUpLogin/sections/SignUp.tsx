@@ -85,7 +85,7 @@ export default function SignUp() {
             />
             <Text className="text-white font-jost-bold text-center mt-3 text-sm">
               ¡¡Regístrate, recibirás{" "}
-              <Text style={{ color: "#FFD700" }}>10.000</Text>
+              <Text style={{ color: "#FFD700" }}>{process.env.EXPO_PUBLIC_COINS || "10.000"}</Text>
               {" "}coins de una!!
             </Text>
           </View>
