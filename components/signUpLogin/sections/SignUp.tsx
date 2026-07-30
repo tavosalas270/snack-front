@@ -8,9 +8,8 @@ export default function SignUp() {
   const { subSectionSelected, setSubSectionSelected } = useSignUpContext();
 
   const handleBack = () => {
+    // 'code' step is temporarily suspended from the flow
     if (subSectionSelected === 'credentials') {
-      setSubSectionSelected('code');
-    } else if (subSectionSelected === 'code') {
       setSubSectionSelected('link');
     } else if (subSectionSelected === 'link') {
       setSubSectionSelected('create');
@@ -29,8 +28,8 @@ export default function SignUp() {
         </Pressable>
       )}
 
-      {/* Progress Dots */}
-      <View className="relative flex-row items-center justify-center gap-3 w-[132px] mx-auto mb-12">
+      {/* Progress Dots – 'code' step temporarily suspended */}
+      <View className="relative flex-row items-center justify-center gap-3 w-[96px] mx-auto mb-12">
         {/* Connecting Line */}
         <View className="absolute h-[2px] bg-snack-pink left-2 right-2 top-1/2 -translate-y-1/2 z-0" />
 
@@ -54,19 +53,8 @@ export default function SignUp() {
           <View className="w-3 h-3 rounded-full bg-snack-pink z-10" />
         )}
 
-        {/* Dot 3 – code */}
+        {/* Dot 3 – credentials */}
         {subSectionSelected === "create" || subSectionSelected === "link" ? (
-          <View className="w-3 h-3 rounded-full bg-white z-10" />
-        ) : subSectionSelected === "code" ? (
-          <View className="w-6 h-6 rounded-full border-2 border-snack-pink items-center justify-center z-10 bg-[#1E0942]">
-            <View className="w-3 h-3 rounded-full bg-white" />
-          </View>
-        ) : (
-          <View className="w-3 h-3 rounded-full bg-snack-pink z-10" />
-        )}
-
-        {/* Dot 4 – credentials */}
-        {subSectionSelected === "create" || subSectionSelected === "link" || subSectionSelected === "code" ? (
           <View className="w-3 h-3 rounded-full bg-white z-10" />
         ) : (
           <View className="w-6 h-6 rounded-full border-2 border-snack-pink items-center justify-center z-10 bg-[#1E0942]">
@@ -93,15 +81,17 @@ export default function SignUp() {
       )}
 
       {subSectionSelected === "link" && (
-        <LinkEmail onContinue={() => setSubSectionSelected("code")} />
+        <LinkEmail onContinue={() => setSubSectionSelected("credentials")} />
       )}
 
+      {/* VerifyCode temporarily suspended from the flow
       {subSectionSelected === "code" && (
         <VerifyCode
           onContinue={() => setSubSectionSelected("credentials")}
           onRequestNewCode={() => console.log('Request new code')}
         />
       )}
+      */}
 
       {subSectionSelected === "credentials" && (
         <SetCredentials />
