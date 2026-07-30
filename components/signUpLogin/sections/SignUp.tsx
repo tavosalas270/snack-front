@@ -2,7 +2,7 @@ import { AntDesign } from '@expo/vector-icons';
 import { Pressable, Text, View } from 'react-native';
 import { SignUpButton } from '../components';
 import { useSignUpContext } from '../context';
-import { Create, LinkEmail, SetCredentials, VerifyCode } from '../subSections';
+import { Create, LinkEmail, SetCredentials } from '../subSections';
 
 export default function SignUp() {
   const { subSectionSelected, setSubSectionSelected } = useSignUpContext();
@@ -28,7 +28,7 @@ export default function SignUp() {
         </Pressable>
       )}
 
-      {/* Progress Dots – 'code' step temporarily suspended */}
+      {/* Progress Dots – 'code' step suspended */}
       <View className="relative flex-row items-center justify-center gap-3 w-[96px] mx-auto mb-12">
         {/* Connecting Line */}
         <View className="absolute h-[2px] bg-snack-pink left-2 right-2 top-1/2 -translate-y-1/2 z-0" />
