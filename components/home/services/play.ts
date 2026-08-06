@@ -105,24 +105,16 @@ export const getComments = async (videoId: string, token: string | null = null):
     return data;
 };
 
-export const getVideoPlayUrl = async (videoId: string, token: string | null = null): Promise<{ id: string; title: string; video_path: string }> => {
+export const getVideoPlayUrl = async (videoId: string, token: string | null = null): Promise<{ videoUrl: string }> => {
     const baseUrl = process.env.EXPO_PUBLIC_SERVER_URL;
-    const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
+
+    // expo-video maneja la autenticación con el header Authorization directamente.
+    // Si hay un error de acceso (401/403), el listener 'statusChange' en el player lo captura.
+    return {
+        videoUrl: `${baseUrl}/api/videos/${videoId}/play/`,
     };
-
-    const response = await fetchWithAuth(`${baseUrl}/api/videos/${videoId}/play/`, {
-        method: 'GET',
-        headers,
-    });
-
-    if (!response.ok) {
-        throw { status: response.status };
-    }
-
-    const data = await response.json();
-    return data;
 };
+
 
 export const postCommentService = async (comment: PostComment, token: string | null = null): Promise<Comments> => {
     const baseUrl = process.env.EXPO_PUBLIC_SERVER_URL;
