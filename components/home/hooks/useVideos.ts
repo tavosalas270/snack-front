@@ -159,10 +159,10 @@ export const useVideoPlay = (video: Videos | undefined | null, userId?: string |
     });
 
     useEffect(() => {
-        if (query.isSuccess && query.data) {
+        if (query.isSuccess && query.data && video) {
             trackPixelEvent('both', 'ViewContent', {
-                content_name: query.data.title || 'Video Playback',
-                content_id: query.data.id,
+                content_name: video.title || 'Video Playback',
+                content_id: video.id?.toString(),
                 content_type: 'video',
                 user_id: userId
             });

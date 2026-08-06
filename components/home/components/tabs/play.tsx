@@ -34,7 +34,7 @@ export const PlayVideo = ({ video, onClose }: PlayVideoProps) => {
     const { data: playData, isLoading: isLoadingPlay, isSuccess: isPlayReady } = useVideoPlay(video, userData?.id);
     const { accessToken } = useLoginContext();
 
-    const videoUri = isPlayReady && playData?.video_path ? `${BASE_URL}${playData.video_path}` : null;
+    const videoUri = isPlayReady && playData?.videoUrl ? playData.videoUrl : null;
 
     const videoSource = React.useMemo(() => {
         if (!videoUri) return null;
